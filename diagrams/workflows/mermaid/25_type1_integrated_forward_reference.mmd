@@ -1,0 +1,26 @@
+---
+config:
+  theme: mc
+---
+flowchart TD
+    accTitle: Type 1 proposed integrated audio and frequency-reference link
+    accDescr: A source master clock governs audio production and a qualified Ethernet transmit reference. The DAC recovers the line frequency, disciplines its local audio oscillator, and converts buffered audio. Return Ethernet control remains present.
+    subgraph transport["Transport: source-master option"]
+        MASTER["Source audio master"] -. "Audio cadence" .-> PRODUCE["Transport FPGA: stereo production"]
+        MASTER -. "Defined frequency ratio" .-> LINE["Qualified Ethernet clock generator"]
+        PRODUCE --> TX["FPGA MAC, PHY and 1G SFP"]
+        LINE -. "Transmit timing" .-> TX
+    end
+    subgraph receiver["DAC: reference-following option"]
+        RX["SFP and host SerDes CDR / PCS"] --> VALID["DAC FPGA: frame validation"]
+        VALID --> FIFO["Audio FIFO"]
+        RX -. "Recovered frequency" .-> CLEAN["Qualified local oscillator discipline"]
+        CLEAN -. "Local conversion clock" .-> CONVERT["Stereo D/A conversion"]
+        CLEAN -. "FIFO read cadence" .-> FIFO
+        FIFO --> CONVERT
+        FIFO --> CREDIT["Receiver credit accounting"]
+    end
+    TX ==>|"Forward fibre: stereo data and line reference"| RX
+    CREDIT -. "Return fibre: Ethernet control" .-> TX
+
+    style RX fill:#E3F2E7,stroke:#25834A,color:#163D25

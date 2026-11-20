@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import pack from '../../diagrams/workflows/diagram_index.json';
+
+const diagrams = pack.diagrams;
+const byNumbers = (numbers: number[]) => diagrams.filter((item) => numbers.includes(item.number));
+const groups = [
+  { title: 'Transport, discovery and session state', description: 'The optical link, capability negotiation, packet handling, admission and session lifecycle.', diagrams: byNumbers([1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 19, 20, 30]) },
+  { title: 'Clock and flow control', description: 'Receiver timing, credits, packet deadlines, reference loss and source-rate cases.', diagrams: byNumbers([9, 10, 11, 12, 13, 14]) },
+  { title: 'Interfaces, operations and review', description: 'Possible bridges, diagnostics, validation, interoperability and contribution processes.', diagrams: byNumbers([15, 16, 21, 22, 23, 24]) },
+  { title: 'Proposed timing extensions and clock hub', description: 'Future Type 1 and Type 2 timing concepts, plus a proposed clock-hub role. These are not adopted v0.2 wire requirements.', diagrams: byNumbers([25, 26, 27, 28, 29, 31, 32, 33, 34]) },
+];
+const label = (status: string) => status.startsWith('Current') ? 'v0.2 explanation' : status.startsWith('Proposed optical') || status.startsWith('Proposed clock') ? 'Proposed extension' : 'Proposed workflow';
+---
+<BaseLayout title="Workflow diagrams" description="Editable O2AT transport, clocking, session and proposed extension diagrams with source files and status notes.">
+  <div class="wrap page-intro">
+    <p class="eyebrow">Engineering diagrams · 34 workflows</p>
+    <h1>One transport, shown step by step.</h1>
+    <p class="lead">The editable Mermaid sources are preserved with their captions and status notes. Current v0.2 explanations are identified separately from future proposals.</p>
+  </div>
+  <section class="section section-top">
+    <div class="wrap workflow-note">
+      <p><strong>Review status.</strong> The source pack passed Mermaid grammar checks. This site now renders its diagrams locally as SVG. Layout and styling remain open for review; rendering is not technical adoption or hardware evidence.</p>
+      <p>The Type 1 and Type 2 timing options and the clock-hub role are proposals for future work. They do not add wire values or alter the published O2AT v0.2 paper.</p>
+      <p><a href="/diagrams/workflows/O2AT_Mermaid_Workflows.md">Read the full source catalogue</a> · <a href="https://github.com/tunjidurodola/o2at/tree/main/diagrams/workflows">Browse editable files</a></p>
+    </div>
+  </section>
+  {groups.map((group, groupIndex) => (
+    <section class:list={["section", groupIndex > 0 && "section-top"]} aria-labelledby={`workflow-group-${groupIndex}`}>
+      <div class="wrap workflow-section-head"><p class="eyebrow">Group {String(groupIndex + 1).padStart(2, '0')}</p><h2 id={`workflow-group-${groupIndex}`}>{group.title}</h2><p class="lead">{group.description}</p></div>
+      <ol class="wrap workflow-list">
+        {group.diagrams.map((diagram) => {
+          const source = `/diagrams/workflows/mermaid/${diagram.filename}`;
+          const image = `/diagrams/workflows/${diagram.filename.replace(/\.mmd$/, '.svg')}`;
+          return (
+            <li>
+              <details class="workflow-item" open={diagram.number === 1}>
+                <summary><span class="workflow-number">{String(diagram.number).padStart(2, '0')}</span><span class="workflow-title">{diagram.title}<small>{label(diagram.status)}</small></span></summary>
+                <div class="workflow-detail">
+                  <div class="workflow-image-scroll" tabindex="0" role="region" aria-label={`Scrollable diagram: ${diagram.title}`}><img loading="lazy" src={image} alt={`Workflow diagram ${diagram.number}: ${diagram.title}`} width="1200" height="700" /></div>
+                  <div class="workflow-caption"><p>{diagram.caption}</p>{diagram.caution && <p class="workflow-caution">{diagram.caution}</p>}<p class="workflow-meta">Status: {diagram.status}. Source sections: {diagram.source_sections.join(', ')}.</p><p><a href={source} download>Download editable Mermaid source</a></p></div>
+                </div>
+              </details>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  ))}
+</BaseLayout>

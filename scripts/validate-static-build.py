@@ -153,10 +153,31 @@ def main() -> int:
     if (DIST / 'social-card.svg').is_file() and b'https://' in (DIST / 'social-card.svg').read_bytes():
         errors.append('Social card must be self-contained, with no remote asset dependency.')
 
+    workflow_root = ROOT / 'diagrams' / 'workflows'
+    workflow_pack = workflow_root / 'source-pack'
+    workflow_index = json.loads((workflow_root / 'diagram_index.json').read_text(encoding='utf-8'))
+    workflow_items = workflow_index.get('diagrams', [])
+    if len(workflow_items) != 34:
+        errors.append(f'Expected 34 workflow metadata entries, found {len(workflow_items)}.')
+    for line in (workflow_pack / 'MANIFEST.sha256').read_text(encoding='utf-8').splitlines():
+        expected, relative = line.split(maxsplit=1)
+        source = workflow_pack / relative.strip()
+        if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != expected:
+            errors.append(f'Workflow source pack manifest mismatch: {relative.strip()}')
+    for item in workflow_items:
+        name = item['filename']
+        source = workflow_root / 'mermaid' / name
+        published_source = DIST / 'diagrams' / 'workflows' / 'mermaid' / name
+        rendered = DIST / 'diagrams' / 'workflows' / Path(name).with_suffix('.svg').name
+        if not source.is_file() or not published_source.is_file() or source.read_bytes() != published_source.read_bytes():
+            errors.append(f'Workflow Mermaid source is missing or changed: {name}')
+        if not rendered.is_file() or rendered.stat().st_size == 0:
+            errors.append(f'Workflow SVG is missing or empty: {name}')
+
     if errors:
         print('\n'.join(errors), file=sys.stderr)
         return 1
-    print(f'Static validation passed: {len(pages)} HTML pages, local links/assets, labels, CSP-safe markup and source/download hashes.')
+    print(f'Static validation passed: {len(pages)} HTML pages, 34 Mermaid sources and SVGs, local links/assets, labels, CSP-safe markup and source/download hashes.')
     return 0
 
 

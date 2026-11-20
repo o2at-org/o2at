@@ -1,0 +1,44 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Qualifying and admitting a switched o2at path
+    accDescr: Forwarding, occupied bandwidth, burst limits and delay must all be qualified for a particular Layer-2 path. PCP is a scheduling request, and receiver credits alone do not protect an intermediate switch queue.
+    request["Proposed format, packet profile and topology"]
+    path["Document port speeds, VLAN and switch configuration"]
+    forwarding{"EtherType, frame sizes and forwarding policy qualified?"}
+    wire["Calculate occupied rate, including other traffic and framing"]
+    capacity{"Each egress fits its admission budget?"}
+    burst{"Bursts bounded for queues and slower egresses?"}
+    delay{"Queueing and control round trip fit receiver margins?"}
+    timing{"Required clock relationship separately qualified?"}
+    credits["Receiver grants account for groups already in flight"]
+    qualify["Measure latency, loss and flow control against declared limits"]
+    admit["Admit qualified path; source obeys cumulative credits"]
+    reject["Reject or revise the proposed configuration"]
+    priority["Optional PCP 6 requests priority; it guarantees no reservation"]
+    request --> path
+    path --> forwarding
+    priority -.-> path
+    forwarding -->|"Yes"| wire
+    forwarding -->|"No"| reject
+    wire --> capacity
+    capacity -->|"Yes"| burst
+    capacity -->|"No"| reject
+    burst -->|"Yes"| delay
+    burst -->|"No"| reject
+    delay -->|"Yes"| timing
+    delay -->|"No"| reject
+    timing -->|"Yes"| credits
+    timing -->|"No"| reject
+    credits --> qualify
+    qualify -->|"All declared limits met"| admit
+    qualify -->|"Any limit unmet"| reject
+
+    style request fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style forwarding fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style timing fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style qualify fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style admit fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style reject fill:#FCE8E6,stroke:#B3261E,color:#54201C

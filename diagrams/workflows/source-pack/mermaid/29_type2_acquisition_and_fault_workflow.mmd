@@ -1,0 +1,24 @@
+flowchart TD
+    accTitle: Proposed Type 2 acquisition and fault workflow
+    accDescr: The DAC is the sole timing authority. Audio starts only after DAC timing, returned-reference recovery and transport discipline are valid. Both endpoints retain finite-buffer protection, bounded holdover and a new-session restart rule.
+    SELECT["Select the proposed DAC-master profile"] --> DACOK{"DAC conversion clock valid?"}
+    DACOK -->|"No"| WAIT["Remain muted and report acquisition"]
+    WAIT --> DACOK
+    DACOK -->|"Yes"| RETURN["Establish the optical return reference"]
+    RETURN --> SOURCEOK{"Transport reference and ratio valid?"}
+    SOURCEOK -->|"No"| WAITREF["Hold audio transmission and diagnose"]
+    WAITREF --> RETURN
+    SOURCEOK -->|"Yes"| ADMIT["Validate profile readiness and session context"]
+    ADMIT --> START["START acknowledgement and initial credits"]
+    START --> PREFILL["Send within grant and complete prefill"]
+    PREFILL --> RUN["Convert at DAC cadence and monitor both ends"]
+    RUN --> HEALTH{"Clock and buffer bounds valid?"}
+    HEALTH -->|"Yes"| RUN
+    HEALTH -->|"Reference disturbance"| HOLD{"Declared valid holdover remains?"}
+    HOLD -->|"Yes"| BOUNDED["Continue only within clock and FIFO bounds"]
+    BOUNDED --> HEALTH
+    HOLD -->|"No"| PROTECT["Immediate local mute or source stop and abort"]
+    HEALTH -->|"Invalid timing or exhausted buffer"| PROTECT
+    PROTECT --> REPORT["Attempt fault notification using the active binding"]
+    REPORT -->|"Do not wait for delivery"| RESTART["Retire, reacquire and negotiate a new session"]
+    RESTART --> DACOK

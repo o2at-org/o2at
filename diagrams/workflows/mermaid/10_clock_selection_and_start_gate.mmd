@@ -1,0 +1,32 @@
+---
+config:
+  theme: mc
+---
+sequenceDiagram
+    accTitle: Clock preparation and the START acceptance gate
+    accDescr: OPEN can prepare a selected clock. START requires valid conversion timing and, for common-reference mode, an established frequency relationship. Audio waits for START acknowledgement and playout waits for prefill.
+    participant S as Source
+    participant R as Receiver control
+    participant C as Audio clock subsystem
+    Note over R,C: Internal or external clock selection is distinct from clock_mode
+    S->>R: OPEN with requested format and clock_mode
+    R->>C: Prepare the selected internal or 10 MHz path
+    R-->>S: Accepted context, reference tier includes clock_status
+    opt Acquisition is incomplete
+        S->>R: PING for the admitted session
+        R->>C: Read acquisition and validity state
+        C-->>R: Current clock state
+        R-->>S: PING response with reference-tier clock_status
+    end
+    S->>R: START for the admitted context
+    R->>C: Check conversion-clock validity
+    C-->>R: Current validity result
+    alt Invalid clock or required common-reference relationship absent
+        R-->>S: START fails, no audio authorised
+    else Valid clock and required relationship established
+        R-->>S: START ACK with initial credit_state
+        Note over R,C: Reference-tier ACK also reports clock_status
+        S->>R: AUDIO within the cumulative grant
+        R->>R: Begin playout after agreed prefill
+    end
+    Note over R,C: A 10 MHz input is mandatory on the reference tier, internal operation remains supported

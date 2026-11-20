@@ -1,0 +1,31 @@
+---
+config:
+  theme: mc
+---
+sequenceDiagram
+    accTitle: A packet gap retains its original playout deadline
+    accDescr: An optional bounded reorder buffer may hold an early later packet. If the missing range is still absent at its playout deadline, the basic profile mutes and aborts. Late and duplicate audio is discarded without compressing time.
+    participant S as Source and admitted path
+    participant R as Receiver validation and reorder buffer
+    participant A as Audio-domain playout
+    S->>R: AUDIO N
+    R->>A: Validated range N
+    S--xR: AUDIO N+1 is delayed or discarded
+    S->>R: AUDIO N+2 arrives early
+    R->>R: Detect the gap, retain N+2 within the bounded reorder window
+    Note over R,A: An optional qualified reorder buffer is illustrated
+    alt Missing range arrives before its original deadline
+        S->>R: Delayed AUDIO N+1
+        R->>R: Validate and release contiguous ranges in order
+        R->>A: N+1 then N+2 on the original timeline
+    else Missing range is absent at its playout deadline
+        A->>R: Expected range is due
+        R->>A: Immediate safe mute
+        R->>R: Abort and retire the session
+        Note over R,A: No timeline compression or implicit concealment
+    end
+    opt Duplicate or late audio is subsequently observed
+        S->>R: Previously seen or late AUDIO
+        R->>R: Discard without replay or credit reset
+    end
+    Note over S,R: The basic profile does not require retransmission of late audio

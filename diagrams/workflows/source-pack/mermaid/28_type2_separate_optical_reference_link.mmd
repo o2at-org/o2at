@@ -1,0 +1,19 @@
+flowchart TD
+    accTitle: Type 2 candidate with a separate optical reference link
+    accDescr: Ordinary duplex Ethernet carries audio and return control. An additional optical timing path carries the DAC reference directly to the transport and bypasses the packet switch. This requires additional optical hardware.
+    subgraph dac["DAC end"]
+        MASTER["DAC audio master"] -. "Conversion cadence" .-> PLAY["Audio FIFO and conversion"]
+        MASTER -. "Specified reference format" .-> CLOCKTX["Qualified optical clock transmitter"]
+        RX["DAC FPGA and data-link SFP"] --> PLAY
+        PLAY -. "Credits and status" .-> RX
+    end
+    subgraph transport["Transport end"]
+        CLOCKRX["Qualified optical clock receiver"] --> DISCIPLINE["Local clock discipline"]
+        DISCIPLINE -. "Audio cadence" .-> PRODUCE["Transport FPGA: stereo production"]
+        PRODUCE --> TX["Packetiser and data-link SFP"]
+    end
+    CLOCKTX ==>|"Additional timing path"| CLOCKRX
+    TX ==>|"Audio"| PATH["Direct or qualified Layer-2 data path"]
+    PATH ==>|"Audio"| RX
+    RX -. "Ethernet control" .-> PATH
+    PATH -. "Ethernet control" .-> TX

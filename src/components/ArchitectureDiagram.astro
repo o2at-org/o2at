@@ -1,26 +1,7 @@
 <figure class="diagram-frame" aria-labelledby="architecture-caption">
-  <svg viewBox="0 0 780 390" role="img" aria-labelledby="architecture-title architecture-desc" xmlns="http://www.w3.org/2000/svg">
-    <title id="architecture-title">O2AT data, credit and conversion-clock paths</title>
-    <desc id="architecture-desc">Audio packets travel from a source to a receiver over Fibre A. Receiver credits return on Fibre B. Packets enter a dual-clock FIFO; a receiver-owned audio clock reads the FIFO and controls DAC conversion. Optical fibre isolates the link boundary, while a separate reference connection may be conductive.</desc>
-    <defs>
-      <marker id="arrow-audio" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9z" fill="#087b83"/></marker>
-      <marker id="arrow-credit" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9z" fill="#bd6a27"/></marker>
-      <marker id="arrow-clock" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9z" fill="#4555a0"/></marker>
-    </defs>
-    <rect x="18" y="70" width="125" height="75" rx="3" fill="#eef4f3" stroke="#b7c9c9"/><text x="80" y="102" text-anchor="middle" font-family="Avenir Next,Avenir,sans-serif" font-size="16" fill="#14272d">Audio source</text><text x="80" y="124" text-anchor="middle" font-family="monospace" font-size="11" fill="#52666c">PCM / DSD</text>
-    <rect x="210" y="70" width="135" height="75" rx="3" fill="#eef4f3" stroke="#b7c9c9"/><text x="277" y="102" text-anchor="middle" font-family="Avenir Next,Avenir,sans-serif" font-size="15" fill="#14272d">SFP + MAC</text><text x="277" y="124" text-anchor="middle" font-family="monospace" font-size="11" fill="#52666c">Layer 2 frames</text>
-    <rect x="438" y="62" width="132" height="91" rx="3" fill="#e9f2f1" stroke="#7ea5a5" stroke-width="1.4"/><text x="504" y="97" text-anchor="middle" font-family="Avenir Next,Avenir,sans-serif" font-size="15" fill="#14272d">Dual-clock</text><text x="504" y="118" text-anchor="middle" font-family="Avenir Next,Avenir,sans-serif" font-size="15" fill="#14272d">FIFO</text><text x="504" y="139" text-anchor="middle" font-family="monospace" font-size="10" fill="#52666c">write ≠ read clock</text>
-    <rect x="635" y="70" width="122" height="75" rx="3" fill="#eef4f3" stroke="#b7c9c9"/><text x="696" y="102" text-anchor="middle" font-family="Avenir Next,Avenir,sans-serif" font-size="15" fill="#14272d">DAC</text><text x="696" y="124" text-anchor="middle" font-family="monospace" font-size="11" fill="#52666c">conversion output</text>
-    <path d="M143 92H210" stroke="#087b83" stroke-width="3" marker-end="url(#arrow-audio)"/><path d="M345 92H438" stroke="#087b83" stroke-width="3" marker-end="url(#arrow-audio)"/><path d="M570 92H635" stroke="#087b83" stroke-width="3" marker-end="url(#arrow-audio)"/>
-    <text x="390" y="42" text-anchor="middle" font-family="monospace" font-size="12" fill="#087b83">Fibre A · audio frames →</text>
-    <path d="M438 173H345" stroke="#bd6a27" stroke-width="2.5" marker-end="url(#arrow-credit)"/><path d="M210 173H143" stroke="#bd6a27" stroke-width="2.5" marker-end="url(#arrow-credit)"/><text x="292" y="194" text-anchor="middle" font-family="monospace" font-size="12" fill="#92531f">← Fibre B · cumulative receiver credits</text>
-    <rect x="447" y="238" width="115" height="57" rx="3" fill="#f0eff7" stroke="#b3b7d2"/><text x="504" y="263" text-anchor="middle" font-family="Avenir Next,Avenir,sans-serif" font-size="13" fill="#14272d">Local oscillator</text><text x="504" y="281" text-anchor="middle" font-family="monospace" font-size="10" fill="#52666c">or 10 MHz discipline</text>
-    <rect x="637" y="238" width="120" height="57" rx="3" fill="#f0eff7" stroke="#b3b7d2"/><text x="697" y="263" text-anchor="middle" font-family="Avenir Next,Avenir,sans-serif" font-size="13" fill="#14272d">Audio clock</text><text x="697" y="281" text-anchor="middle" font-family="monospace" font-size="10" fill="#52666c">conversion cadence</text>
-    <path d="M562 266H637" stroke="#4555a0" stroke-width="2.5" marker-end="url(#arrow-clock)"/><path d="M697 238V145" stroke="#4555a0" stroke-width="2.5" marker-end="url(#arrow-clock)"/><text x="603" y="252" text-anchor="middle" font-family="monospace" font-size="10" fill="#4555a0">disciplines</text><text x="709" y="184" font-family="monospace" font-size="10" fill="#4555a0">reads</text>
-    <path d="M395 57V157" stroke="#cdd5d6" stroke-width="1.5" stroke-dasharray="5 5"/><text x="395" y="221" transform="rotate(-90 395 221)" text-anchor="middle" font-family="monospace" font-size="10" fill="#52666c">optical isolation boundary</text>
-    <text x="27" y="335" font-family="Avenir Next,Avenir,sans-serif" font-size="12" fill="#52666c">Fibre provides galvanic isolation at the optical link boundary. A separate reference or chassis connection may conduct.</text>
-    <text x="27" y="360" font-family="Avenir Next,Avenir,sans-serif" font-size="12" fill="#52666c">Packet arrival changes FIFO occupancy; it does not clock the DAC conversion process.</text>
-  </svg>
+  <div class="architecture-diagram-scroll" tabindex="0" role="region" aria-label="Scrollable O2AT system architecture diagram">
+    <img src="/diagrams/architecture.svg" alt="System overview: audio travels from the source to the receiver over Fibre A; receiver credits return over Fibre B. The receiver clock controls FIFO read cadence and DAC conversion." width="1740" height="379" />
+  </div>
   <figcaption id="architecture-caption" class="diagram-caption">Proposed v0.2 architecture. Distinct lines show audio data, receiver feedback and conversion-clock control. It is a design model, not a measured implementation.</figcaption>
   <div class="diagram-key" aria-hidden="true"><span class="key-audio">audio data</span><span class="key-credit">credits</span><span class="key-clock">clock</span></div>
 </figure>

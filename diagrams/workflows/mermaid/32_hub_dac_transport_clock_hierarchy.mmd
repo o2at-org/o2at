@@ -1,0 +1,35 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Recommended Type 2 hierarchy with a clock hub
+    accDescr: The hub disciplines the DAC audio clock. The DAC returns a qualified timing reference that disciplines transport audio production. Forward stereo data and return credit control remain separate services, with distinct DAC interfaces for the hub and transport.
+    HUB["Proposed clock distribution hub"]
+    HUBIN["DAC: suitable dedicated hub-reference input"]
+    DACCLK["DAC: qualified local audio clock discipline"]
+    DACPORT["DAC: separate transport-facing optical interface"]
+    FIFO["DAC FPGA: validated dual-clock audio FIFO"]
+    CONVERT["DAC conversion"]
+    FOLLOW["Transport FPGA: qualified reference recovery and local discipline"]
+    PRODUCE["Transport: audio production and packetiser"]
+    CONTROL["DAC: cumulative credit and status control"]
+    HUB ==>|"Qualified continuous reference"| HUBIN
+    HUBIN -.->|"Reference input"| DACCLK
+    DACCLK -.->|"FIFO read cadence"| FIFO
+    DACCLK -.->|"Conversion cadence"| CONVERT
+    DACCLK -.->|"Defined frequency relationship"| DACPORT
+    DACPORT ==>|"DAC-originated return timing service"| FOLLOW
+    FOLLOW -.->|"Audio production cadence"| PRODUCE
+    PRODUCE ==>|"Forward stereo AUDIO"| DACPORT
+    DACPORT -->|"Complete validated groups"| FIFO
+    FIFO --> CONVERT
+    FIFO -->|"Actual group retirement"| CONTROL
+    CONTROL -.->|"Specified reverse Ethernet control carriage"| PRODUCE
+    PORTNOTE["One ordinary SFP port is point-to-point, not a hub input and transport port simultaneously"]
+    PORTNOTE -.-> HUBIN
+    PORTNOTE -.-> DACPORT
+
+    style HUB fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style DACCLK fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style FOLLOW fill:#E3F2E7,stroke:#25834A,color:#163D25

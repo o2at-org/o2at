@@ -1,0 +1,53 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Common audio receive validation and fault containment
+    accDescr: Validate a complete Ethernet frame and its admitted audio session before FIFO commit; discard unrelated traffic and protect only an affected active stream.
+    Frame["Receive a candidate AUDIO or FINAL_AUDIO frame"]
+    FCS{"Whole Ethernet frame passes FCS?"}
+    Corrupt["Discard corrupt frame; count the error"]
+    Binding{"Recognised framing and admitted audio session binding?"}
+    Foreign["Discard foreign, stale or unadmitted traffic"]
+    Rules{"Valid implied length, group count and active-session rules?"}
+    Sequence{"Expected packet or admissible bounded reordering?"}
+    Old{"Late or duplicate packet?"}
+    Discard["Discard without advancing the source timeline"]
+    Stage["Stage the complete validated packet in sequence"]
+    Deadline["Monitor the admitted stream's playout deadline"]
+    Ready{"Next expected packet available?"}
+    Due{"Its playout deadline reached?"}
+    Wait["Keep bounded data and wait for the missing range"]
+    Commit["Commit only validated, ordered groups to the CDC FIFO"]
+    Playback["Retire groups under the valid conversion clock"]
+    Fault["Safely mute, flush and retire the affected session"]
+    Frame --> FCS
+    FCS -- No --> Corrupt
+    FCS -- Yes --> Binding
+    Binding -- No --> Foreign
+    Binding -- Yes --> Rules
+    Rules -- No --> Fault
+    Rules -- Yes --> Sequence
+    Sequence -- Yes --> Stage
+    Sequence -- No --> Old
+    Old -- Yes --> Discard
+    Old -- No --> Fault
+    Stage --> Ready
+    Deadline --> Due
+    Ready -- Yes --> Commit
+    Ready -- No --> Due
+    Due -- No --> Wait
+    Wait --> Ready
+    Due -- Yes --> Fault
+    Commit --> Playback
+
+    style Frame fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style Corrupt fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style Foreign fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style Rules fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style Discard fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style Stage fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style Commit fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style Playback fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style Fault fill:#FCE8E6,stroke:#B3261E,color:#54201C

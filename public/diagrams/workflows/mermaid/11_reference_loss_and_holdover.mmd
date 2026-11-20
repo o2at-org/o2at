@@ -1,0 +1,40 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Finite holdover and local protection after reference loss
+    accDescr: Reference loss may retain a session only while the conversion clock stays valid and declared holdover and FIFO margins remain adequate. Failure causes immediate local mute and abort without waiting for STATUS delivery.
+    RUN["Active session with an externally disciplined audio clock"]
+    LOSS["Reference absent or out of range"]
+    VALID{"Conversion clock still valid?"}
+    BOUNDS{"Declared holdover time and FIFO margins permit continuation?"}
+    HOLD["Retain session in finite holdover"]
+    MON["Monitor validity, elapsed holdover and FIFO margin"]
+    MUTE["Immediate local safe mute and session abort"]
+    STATUS["Best-effort STATUS on state change while transport works"]
+    RETIRE["Retire the old session"]
+    REACQUIRE["Validate a clock through a controlled restart"]
+    NEW["New nonce and session ID; repeat the START clock gate"]
+    RUN --> LOSS
+    LOSS --> VALID
+    VALID -->|"Yes"| BOUNDS
+    VALID -->|"No"| MUTE
+    BOUNDS -->|"Yes"| HOLD
+    BOUNDS -->|"No"| MUTE
+    HOLD --> MON
+    MON --> VALID
+    HOLD -.-> STATUS
+    MUTE -.-> STATUS
+    MUTE --> RETIRE
+    RETIRE --> REACQUIRE
+    REACQUIRE --> NEW
+    NOTE["STATUS delivery never delays local protection or authorises automatic resumption"]
+    STATUS -.-> NOTE
+
+    style VALID fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style BOUNDS fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style HOLD fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style MON fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style MUTE fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style NEW fill:#E3F2E7,stroke:#25834A,color:#163D25

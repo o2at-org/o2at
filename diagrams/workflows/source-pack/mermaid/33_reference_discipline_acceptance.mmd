@@ -1,0 +1,29 @@
+flowchart TD
+    accTitle: Acceptance of an actual reference-discipline design
+    accDescr: A lock indication is only a starting observation. Qualification traces the real audio-clock path, checks programmed ratios and measures relative drift, phase noise and FIFO behaviour. Absolute accuracy requires an independent reference and no shared sample epoch is implied.
+    CANDIDATE["Candidate hub and selected Type 1 or Type 2 topology"]
+    LOCK["Reported lock or valid clock is not proof of effective discipline"]
+    TRACE["Trace the actual reference-to-audio-clock path"]
+    RATIOS["Validate declared ratios, oscillator ranges and output interfaces"]
+    REGIMEN["Test traffic, temperature, clock offsets, reference loss and reacquisition"]
+    RELATIVE["Measure relative rate drift, group counts and FIFO occupancy"]
+    NOISE["Measure phase-noise spectra, spurs and time-domain timing error"]
+    ABSOLUTE["Measure absolute source accuracy against an independent reference"]
+    PASS{"All declared bounds met in the tested topology?"}
+    REVISE["Revise the clock plan, control loop or buffer budget"]
+    ACCEPT["Qualify only the demonstrated modes and conditions"]
+    LIMIT["Optical isolation does not prove zero drift, zero jitter or a shared sample epoch"]
+    CANDIDATE --> LOCK
+    LOCK --> TRACE
+    TRACE --> RATIOS
+    RATIOS --> REGIMEN
+    REGIMEN --> RELATIVE
+    REGIMEN --> NOISE
+    REGIMEN --> ABSOLUTE
+    RELATIVE --> PASS
+    NOISE --> PASS
+    ABSOLUTE --> PASS
+    PASS -->|"No"| REVISE
+    REVISE --> TRACE
+    PASS -->|"Yes"| ACCEPT
+    LIMIT -.-> ACCEPT

@@ -1,0 +1,39 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Common PCM and native DSD packetisation
+    accDescr: PCM samples or chronological DSD bits become big-endian 32-bit channel containers, groups, o2at packets and ordinary Ethernet frames.
+    Input["Use the admitted format and channel map"]
+    Format{"PCM32 or DSD32?"}
+    PCM["Take one signed PCM sample per channel"]
+    PCMWord["Pack big-endian PCM32; left-align 16 or 24 valid bits"]
+    DSD["Take 32 chronological DSD bits per channel"]
+    DSDWord["Pack big-endian DSD32; earliest sample is bit 31"]
+    Group["Append channel words in the negotiated map order"]
+    Final{"Is this the final non-empty packet?"}
+    Regular["AUDIO contains exactly G groups"]
+    Last["FINAL_AUDIO contains 1 to G groups, including a full G"]
+    Header["Prepend the fixed 12-byte o2at header"]
+    MAC["Build the Ethernet frame; add required padding and FCS"]
+    PCS["1000BASE-X PCS applies 8b/10b at 1.25 GBd"]
+    Optical["Transmit through the qualified 1G SFP optical link"]
+    Input --> Format
+    Format -- PCM32 --> PCM
+    PCM --> PCMWord
+    Format -- DSD32 --> DSD
+    DSD --> DSDWord
+    PCMWord --> Group
+    DSDWord --> Group
+    Group --> Final
+    Final -- No --> Regular
+    Final -- Yes --> Last
+    Regular --> Header
+    Last --> Header
+    Header --> MAC
+    MAC --> PCS
+    PCS --> Optical
+
+    style PCMWord fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style Optical fill:#E3F2E7,stroke:#25834A,color:#163D25

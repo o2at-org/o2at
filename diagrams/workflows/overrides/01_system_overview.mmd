@@ -1,0 +1,37 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: O2AT system overview
+    accDescr: Audio crosses a duplex optical Ethernet link into a validated receiver buffer. The receiver audio clock controls conversion, while cumulative credits regulate source delivery over the return fibre.
+    subgraph source["O2AT source (Transport)"]
+        TX["Transport FPGA, Ethernet and 1G SFP"]
+        MEDIA["Stored or generated audio"]
+    end
+    subgraph receiver["O2AT receiver (DAC)"]
+        FIFO["Dual-clock audio FIFO"]
+        RX["1G SFP and DAC-side FPGA validation"]
+        DAC["Converter interface and D/A conversion"]
+        CLOCK["Receiver audio clock"]
+        ACCOUNT["Retired-group and buffer accounting"]
+        CONTROL["Cumulative credits and status"]
+    end
+    MEDIA --> TX
+    RX L_RX_FIFO_0@--> FIFO
+    FIFO L_FIFO_DAC_0@--> DAC & ACCOUNT
+    CLOCK L_CLOCK_FIFO_0@-. Read cadence .-> FIFO
+    CLOCK L_CLOCK_DAC_0@-. Conversion timing .-> DAC
+    ACCOUNT --> CONTROL
+    TX L_TX_RX_0@== Fibre A: audio and forward control ==> RX
+    CONTROL L_CONTROL_TX_0@-. Fibre B: return control .-> TX
+
+    linkStyle 7 stroke:#00C853,fill:none
+
+    L_RX_FIFO_0@{ animation: slow }
+    L_FIFO_DAC_0@{ animation: fast }
+    L_FIFO_ACCOUNT_0@{ animation: slow }
+    L_CLOCK_FIFO_0@{ animation: slow }
+    L_CLOCK_DAC_0@{ animation: slow }
+    L_TX_RX_0@{ animation: slow }
+    L_CONTROL_TX_0@{ animation: fast }

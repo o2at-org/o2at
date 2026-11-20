@@ -1,0 +1,46 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Proposed interoperability and release gates
+    accDescr: This editorial release workflow derives from the draft validation and governance programme. Independent interoperability, qualified optics, safe failure behaviour and a production identifier are evidence gates, not claims of existing certification or endorsement.
+    proposal["Editorial workflow recommendation: release gates"]
+    definitions["Freeze packet and control definitions for review"]
+    independent{"Two independent sources and two receivers interoperate?"}
+    optics{"Baseline optical parts qualified?"}
+    safety{"No unresolved safety-of-output failures?"}
+    fabric{"Fabric capability claimed?"}
+    switches{"Documented switch configuration validated?"}
+    clock_extension{"Proposed clock-transfer extension claimed?"}
+    clock_path{"Reference transfer specified and independently qualified?"}
+    identifier{"Production protocol identifier available?"}
+    draft["Remain an engineering draft and record missing evidence"]
+    evaluation["Controlled experimental evaluation only"]
+    release["Publish versioned release, conformance scope and evidence"]
+    proposal --> definitions
+    definitions --> independent
+    independent -->|"Yes"| optics
+    independent -->|"No"| draft
+    optics -->|"Yes"| safety
+    optics -->|"No"| draft
+    safety -->|"Yes"| fabric
+    safety -->|"No"| draft
+    fabric -->|"Yes"| switches
+    fabric -->|"No"| clock_extension
+    switches -->|"Yes"| clock_extension
+    switches -->|"No"| draft
+    clock_extension -->|"Yes"| clock_path
+    clock_extension -->|"No"| identifier
+    clock_path -->|"Yes"| identifier
+    clock_path -->|"No"| draft
+    identifier -->|"Yes"| release
+    identifier -->|"No"| evaluation
+
+    style proposal fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style definitions fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style optics fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style clock_extension fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style clock_path fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style draft fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style release fill:#E3F2E7,stroke:#25834A,color:#163D25

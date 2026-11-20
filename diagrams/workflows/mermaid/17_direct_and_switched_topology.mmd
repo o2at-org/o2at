@@ -1,0 +1,35 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Direct and switched o2at topologies
+    accDescr: A direct 1G optical link and an optional Layer-2 fabric carry audio and end-to-end receiver credits. Optional PAUSE is hop-local. Optical link isolation does not remove other conductive connections.
+    subgraph direct["Direct connection: mandatory 1G baseline"]
+        d_source["o2at source"]
+        d_receiver["o2at receiver"]
+        d_source -->|"1G optical audio"| d_receiver
+        d_receiver -.->|"End-to-end receiver credits"| d_source
+    end
+    subgraph fabric["Optional fabric: one Layer-2 bridge domain"]
+        f_source["1G o2at source"]
+        aggregation["Alternative 10G source or aggregation uplink"]
+        bridge["Qualified Ethernet bridge"]
+        f_receiver["1G o2at receiver"]
+        f_source -->|"1G audio"| bridge
+        aggregation -->|"Admitted 10G uplink traffic"| bridge
+        bridge -->|"Admitted 1G egress"| f_receiver
+        f_receiver -.->|"Receiver credits"| bridge
+        bridge -.->|"Forward credits to the admitted source"| f_source
+        bridge -.->|"Or to the admitted uplink source"| aggregation
+        f_receiver -.->|"Hop-local PAUSE, if enabled"| bridge
+    end
+    routing["Ordinary IP routers do not forward o2at frames"]
+    timing["Packet bridging does not establish timing-reference transfer"]
+    isolation["Fibre isolates each signal link; other cables may connect chassis"]
+    bridge -.-> routing
+    bridge -.-> timing
+    d_receiver -.-> isolation
+    f_receiver -.-> isolation
+
+    style bridge fill:#E3F2E7,stroke:#25834A,color:#163D25

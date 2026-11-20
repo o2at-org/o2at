@@ -1,0 +1,25 @@
+flowchart TD
+    accTitle: Admission decision for a proposed legacy PCM input bridge
+    accDescr: A legacy live source has no o2at credit interface. A transparent bridge needs a qualified framing path and a real coherent clock relationship. Otherwise an explicit separate rate-conversion path or rejection is required; future ADAT and source-clock tracking remain conditional.
+    LEGACY["Proposed legacy PCM bridge: S/P-DIF or future ADAT"]
+    FRAME{"Supported framing and channel map qualified?"}
+    UNSUPPORTED["Reject the unsupported input or profile"]
+    CLOCK{"Can the actual live-source clock be coherent with the receiver?"}
+    COHERENT["Establish and verify the real audio-frequency relationship"]
+    CONVERT{"Explicit rate-conversion path selected and qualified?"}
+    RESAMPLE["Use that separately specified conversion path"]
+    REJECT["Reject transparent operation"]
+    ADMIT["Apply o2at format, capacity and cumulative-credit admission"]
+    FUTURE["Future ADAT needs a bridge and channel map; source-clock tracking needs a specified estimator, servo and jitter transfer"]
+    LIMIT["Finite buffering and PAUSE cannot stop the original live stream"]
+    LEGACY --> FRAME
+    FRAME -->|"No"| UNSUPPORTED
+    FRAME -->|"Yes"| CLOCK
+    CLOCK -->|"Yes"| COHERENT
+    COHERENT --> ADMIT
+    CLOCK -->|"No"| CONVERT
+    CONVERT -->|"Yes"| RESAMPLE
+    RESAMPLE --> ADMIT
+    CONVERT -->|"No"| REJECT
+    LEGACY -.-> FUTURE
+    LIMIT -.-> CLOCK

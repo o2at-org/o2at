@@ -1,0 +1,39 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Separate link, session and clock diagnostics
+    accDescr: The user interface reports physical link, admitted session and conversion-clock state separately. Local output protection acts independently of status delivery. Engineering counters explain faults without hiding an unsupported format behind a link indicator.
+    device["o2at device status"]
+    link["Link: module, loss of signal, speed and duplex"]
+    session["Session: capabilities, accepted format and current state"]
+    clock["Clock: internal, locked, declared holdover or invalid"]
+    physical["Physical fault: identify the optical or link problem"]
+    unsupported["Unsupported mode: refuse admission and explain why"]
+    protect["Invalid timing or exhausted safe holdover: mute and abort"]
+    display["Present distinct link, session and clock outcomes"]
+    format["Show verified PCM rate, DSD family and channel count"]
+    latency["Show packet deadline, FIFO target and qualified topology"]
+    counters["Expose FCS, sequence, syntax, FIFO and restart counters"]
+    local["Local protection does not wait for status delivery"]
+    device --> link
+    device --> session
+    device --> clock
+    link -->|"On fault"| physical
+    session -->|"On failed admission"| unsupported
+    clock -->|"On unsafe timing"| protect
+    link --> display
+    session --> display
+    clock --> display
+    counters --> display
+    display --> format
+    display --> latency
+    local -.-> protect
+
+    style session fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style clock fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style physical fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style unsupported fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style protect fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style latency fill:#E3F2E7,stroke:#25834A,color:#163D25

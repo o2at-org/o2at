@@ -1,19 +1,39 @@
+---
+config:
+  theme: mc
+---
 flowchart LR
-  SRC[Audio source<br/>PCM / DSD] --> TX[Source SFP + MAC]
-  subgraph OPTICAL[Full-duplex optical link · galvanic isolation at the link boundary]
-    direction LR
-    TX -->|Fibre A · audio frames| RX[Receiver SFP + MAC]
-    RX -->|Fibre B · cumulative receiver credits| TX
-  end
-  RX -->|Accepted packet groups| FIFO[Dual-clock FIFO<br/>transport write · audio read]
-  FIFO --> DAC[DAC conversion]
-  REF[Local oscillator<br/>or 10 MHz discipline] --> CLK[Receiver audio clock]
-  CLK -->|FIFO read cadence| FIFO
-  CLK -->|Conversion timing| DAC
-  EXTRA[Optional coax / chassis path] -. may conduct .-> DAC
-  classDef audio fill:#e9f2f1,stroke:#087b83,color:#14272d
-  classDef feedback fill:#fbf1e7,stroke:#bd6a27,color:#14272d
-  classDef clock fill:#f0eff7,stroke:#4555a0,color:#14272d
-  class SRC,TX,RX,FIFO,DAC audio
-  class REF,CLK clock
-  class EXTRA feedback
+    accTitle: O2AT system overview
+    accDescr: Audio crosses a duplex optical Ethernet link into a validated receiver buffer. The receiver audio clock controls conversion, while cumulative credits regulate source delivery over the return fibre.
+    subgraph source["O2AT source (Transport)"]
+        TX["Transport FPGA, Ethernet and 1G SFP"]
+        MEDIA["Stored or generated audio"]
+    end
+    subgraph receiver["O2AT receiver (DAC)"]
+        FIFO["Dual-clock audio FIFO"]
+        RX["1G SFP and DAC-side FPGA validation"]
+        DAC["Converter interface and D/A conversion"]
+        CLOCK["Receiver audio clock"]
+        ACCOUNT["Retired-group and buffer accounting"]
+        CONTROL["Cumulative credits and status"]
+    end
+    MEDIA --> TX
+    RX L_RX_FIFO_0@--> FIFO
+    FIFO L_FIFO_DAC_0@--> DAC & ACCOUNT
+    CLOCK L_CLOCK_FIFO_0@-. Read cadence .-> FIFO
+    CLOCK L_CLOCK_DAC_0@-. Conversion timing .-> DAC
+    ACCOUNT --> CONTROL
+    TX L_TX_RX_0@== Fibre A: audio and forward control ==> RX
+    CONTROL L_CONTROL_TX_0@-. Fibre B: return control .-> TX
+
+    linkStyle 0,1,2,7 stroke:#087b83,stroke-width:2.5px,fill:none
+    linkStyle 3,6,8 stroke:#bd6a27,stroke-width:2px,fill:none
+    linkStyle 4,5 stroke:#4555a0,stroke-width:2px,stroke-dasharray:4 4,fill:none
+
+    L_RX_FIFO_0@{ animation: slow }
+    L_FIFO_DAC_0@{ animation: fast }
+    L_FIFO_ACCOUNT_0@{ animation: slow }
+    L_CLOCK_FIFO_0@{ animation: slow }
+    L_CLOCK_DAC_0@{ animation: slow }
+    L_TX_RX_0@{ animation: slow }
+    L_CONTROL_TX_0@{ animation: fast }

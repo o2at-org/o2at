@@ -1,0 +1,41 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Reference loss and explicit recovery in a proposed hub hierarchy
+    accDescr: Each affected endpoint checks its own conversion or production clock and finite buffer margin. Valid bounded holdover may continue, but expiry or invalidity triggers local protection without waiting for fault delivery. Recovery revalidates the selected hierarchy and starts a new session.
+    RUN["Run under the explicitly selected hub-derived hierarchy"]
+    LOSS["Hub reference or downstream timing service is disturbed"]
+    VALID{"Locally required audio clock remains valid?"}
+    BOUNDS{"Declared holdover time and FIFO margins remain safe?"}
+    HOLD["Continue only within declared valid holdover"]
+    MONITOR["Monitor local timing, real rate and remaining buffer margin"]
+    PROTECT["Immediate local safe mute or production stop and session abort"]
+    STATUS["Attempt best-effort STATUS with retained context, without waiting for delivery"]
+    RETIRE["Retire the affected session"]
+    REACQUIRE["Explicitly reacquire the selected clock hierarchy"]
+    CHECK["Revalidate clock paths, ratios and endpoint readiness"]
+    START["New nonce and session ID, START gate and qualified prefill"]
+    NOFALLBACK["No automatic switch to an unrelated master"]
+    RUN --> LOSS
+    LOSS --> VALID
+    VALID -->|"Yes"| BOUNDS
+    VALID -->|"No"| PROTECT
+    BOUNDS -->|"Yes"| HOLD
+    BOUNDS -->|"No"| PROTECT
+    HOLD --> MONITOR
+    MONITOR --> VALID
+    PROTECT --> STATUS
+    STATUS --> RETIRE
+    RETIRE --> REACQUIRE
+    REACQUIRE --> CHECK
+    CHECK --> START
+    NOFALLBACK -.-> REACQUIRE
+
+    style RUN fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style VALID fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style BOUNDS fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style HOLD fill:#E3F2E7,stroke:#25834A,color:#163D25
+    style PROTECT fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style START fill:#E3F2E7,stroke:#25834A,color:#163D25

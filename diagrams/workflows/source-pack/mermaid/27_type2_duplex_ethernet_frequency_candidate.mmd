@@ -1,0 +1,22 @@
+flowchart TD
+    accTitle: Type 2 candidate using the two fibres of one duplex Ethernet link
+    accDescr: The DAC derives a compliant reverse Ethernet line clock from its audio reference. The transport extracts that continuous physical-layer frequency before elasticity, cleans it and disciplines audio production. Normal reverse control frames remain intact.
+    subgraph dac["DAC: one SFP module"]
+        MASTER["DAC audio master"] -. "Local cadence" .-> CONVERT["D/A conversion"]
+        MASTER -. "Qualified ratio" .-> TXCLOCK["Ethernet transmit clock generator"]
+        TXCLOCK -. "Continuous line timing" .-> REVERSE["DAC FPGA: return MAC / PCS and SFP TX"]
+        RECEIVE["SFP RX and DAC FPGA validation"] --> FIFO["Audio FIFO"]
+        MASTER -. "FIFO read cadence" .-> FIFO
+        FIFO --> CONVERT
+        FIFO --> CONTROL["CREDIT and STATUS"]
+        CONTROL --> REVERSE
+    end
+    subgraph transport["Transport: one SFP module"]
+        RECOVER["SFP RX and host SerDes CDR"] -. "Recovered reference before elasticity" .-> CLEAN["Qualified clock-cleaning subsystem"]
+        RECOVER --> MAC["Transport FPGA: return control"]
+        CLEAN -. "Audio cadence" .-> PRODUCE["Transport FPGA: stereo production"]
+        PRODUCE --> FORWARD["Packetiser, MAC / PCS and SFP TX"]
+        MAC -. "Cumulative grant" .-> FORWARD
+    end
+    REVERSE ==>|"Fibre B: encoded line timing plus control"| RECOVER
+    FORWARD ==>|"Fibre A: framed stereo audio"| RECEIVE

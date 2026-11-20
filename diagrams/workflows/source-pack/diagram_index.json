@@ -1,0 +1,598 @@
+{
+  "project": "o2at",
+  "edition": "2026-11-20",
+  "diagrams": [
+    {
+      "title": "System overview: audio forward, control back",
+      "purpose": "Introduce the complete transport and its separation of data delivery from conversion timing.",
+      "website_page": "Home / How it works",
+      "source_sections": [
+        "4.1",
+        "5.1",
+        "5.3",
+        "6.1",
+        "6.4"
+      ],
+      "caption": "The mandatory baseline uses full-duplex 1G optical Ethernet. The receiver controls conversion timing and returns cumulative credits so the source sends within available storage.",
+      "caution": "The fibre isolates the audio-link path. Separate coaxial clock, power-earth, USB or analogue connections may provide conductive paths between chassis. The diagram is an architectural view, not a claim that an existing DAC accepts O2AT.",
+      "number": 1,
+      "filename": "01_system_overview.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "582560d6fcf3211c6dd409df366d128a29698a2e7c1293103aae0727bae936cd"
+    },
+    {
+      "title": "Common optical Ethernet link startup",
+      "purpose": "Separate physical link readiness from audio session readiness and clock acquisition.",
+      "website_page": "/how-it-works/",
+      "source_sections": [
+        "4.1",
+        "5.1",
+        "5.3",
+        "5.6"
+      ],
+      "caption": "The mandatory baseline establishes a qualified 1000BASE-SX, full-duplex 1G Ethernet link before o2at discovery. Link-up alone does not permit playback.",
+      "caution": "This is the common packet/control workflow, not a newly standardised clock architecture. The diagram shows the common SX optical profile; explicitly qualified LX links and paired forced-operation tests are separate permitted cases. A 10 MHz input is not required for Ethernet link-up. A 10G-only host cannot be assumed to support a 1G SFP. The two directions are Ethernet directions, not an implied raw optical clock channel.",
+      "number": 2,
+      "filename": "02_optical_link_startup.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "d285971d3ca7bcaaf037aedf98715f782c42495af85b02e907e3cdd954d8b730"
+    },
+    {
+      "title": "Common peer discovery and session negotiation",
+      "purpose": "Show the actual v0.2 control names, session admission, clock gate and ordering of START acknowledgement, prefill and playback.",
+      "website_page": "/protocol/",
+      "source_sections": [
+        "4.1",
+        "5.5",
+        "5.6"
+      ],
+      "caption": "HELLO reports capabilities, OPEN fixes the admitted context, and START grants permission to send audio. The receiver begins playback only after the agreed prefill condition.",
+      "caution": "OPEN can prepare or acquire a clock; it does not certify that START can yet succeed. START requires a valid conversion clock and, in common-reference mode, an established frequency relationship. The selected clock arrangement must correspond to an admitted v0.2 clock_mode; proposed raw-clock return links require their own extension definition. Reference-tier successful HELLO, OPEN, START and PING responses include clock_status. Short streams can start below normal prefill only when their complete final range is buffered and FINAL_AUDIO agrees with END. An empty stream uses END with total_groups zero and no audio packet. Discovery broadcasts are bounded; established sessions use unicast.",
+      "number": 3,
+      "filename": "03_discovery_and_negotiation.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "b09e6c17581006b1e2b2def4f6b87ce50f94d96371ca3a361533c6882e39530b"
+    },
+    {
+      "title": "Common format and forward-link capacity admission",
+      "purpose": "Expose packet overhead, whole-group alignment and endpoint admission independently of nominal optical serial rate.",
+      "website_page": "/tools/bandwidth/",
+      "source_sections": [
+        "4.1",
+        "5.3",
+        "5.5",
+        "5.6",
+        "5.8",
+        "6.5"
+      ],
+      "caption": "Compare the complete forward wire demand with 1.000 Gb/s MAC service. The 1.25 GBd optical line rate already includes the 1000BASE-X 8b/10b overhead.",
+      "caution": "W includes MAC addresses and EtherType, the optional four-byte VLAN tag, the 12-byte o2at header, minimum MAC padding, FCS, preamble/SFD and inter-frame gap. Do not apply 8b/10b overhead a second time. For the paper's 125 us assembly target, choose G no larger than min(floor(1440/(4*C)), max(1, floor(r*125e-6))). Negotiate a fixed smaller G when required. The paper uses an 85% planning ceiling for advanced direct links, including other forward traffic; it is not a universal guaranteed-latency claim. Reverse full-duplex control does not consume forward serial capacity. Buffer and clock feasibility remain separate admission requirements. Optional 10G fabric capability must be explicitly supported and admitted, not presumed.",
+      "number": 4,
+      "filename": "04_format_and_capacity_admission.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "702bf326e5f720cd8052b0feefd2d831d200077f605469f903178ae98e6235b9"
+    },
+    {
+      "title": "Common PCM and native DSD packetisation",
+      "purpose": "Make the difference between PCM samples and packed chronological DSD bits visible while preserving a single group and packet model.",
+      "website_page": "/protocol/",
+      "source_sections": [
+        "4.2",
+        "5.3",
+        "5.4",
+        "5.6",
+        "5.7",
+        "5.8"
+      ],
+      "caption": "One PCM group contains one 32-bit container per channel. One DSD group contains 32 chronological one-bit samples per channel. Both use negotiated channel ordering and a fixed 12-byte o2at header.",
+      "caution": "PCM16 and PCM24 use zero-filled low padding bits inside the two's-complement PCM32 container. DSD32 is a bit container, not a signed sample or DoP word. Big-endian and MSB-first describe payload packing; they do not change IEEE Ethernet physical bit transmission or line coding. The earliest DSD bit is container bit 31. AUDIO always contains negotiated G groups. FINAL_AUDIO contains 1 to G, including a full G, and must agree with END. Empty streams have no audio packet. MAC minimum padding is outside the declared audio group count.",
+      "number": 5,
+      "filename": "05_pcm_and_dsd_packetisation.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "42a220292a98a0321e14a0e0f67ab4fcb4cb63c08b5d0285a7bc2cc8412a7c7b"
+    },
+    {
+      "title": "Common audio receive validation and fault containment",
+      "purpose": "Distinguish harmless foreign traffic from faults affecting an admitted audio timeline and prevent corrupt data reaching the conversion FIFO.",
+      "website_page": "/protocol/",
+      "source_sections": [
+        "5.3",
+        "5.4",
+        "5.5",
+        "5.6",
+        "6.5",
+        "7.1"
+      ],
+      "caption": "Complete-frame integrity and session checks precede FIFO commit. Unrelated traffic is discarded; a confirmed missing packet or invalid data threatening an active stream triggers that stream's protective mute and retirement.",
+      "caution": "This diagram covers AUDIO and FINAL_AUDIO. CONTROL additionally validates the source nonce and transaction semantics. The canonical audio binding is talker MAC, listener MAC, VLAN context and session ID. A corrupt Ethernet frame cannot reliably identify an o2at session, so a bad FCS alone does not immediately abort an arbitrary active stream; a subsequently confirmed gap can do so at its playout deadline. Reordering is bounded, the active window is below 32,768 packets, and frame residence must satisfy the sequence-unwrapping limit. The readiness decision is monitored over time; it faults only when the actual deadline is missed, not merely because a packet has not arrived yet. Output mute must use a safe converter-specific method, especially for DSD.",
+      "number": 6,
+      "filename": "06_receive_validation.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "1deafe105ee4f2efa97363513023c15d1c5a57f8ca4338b73c851be719c11bc3"
+    },
+    {
+      "title": "Common admitted-session lifecycle",
+      "purpose": "Summarise named v0.2 receiver phases, safe retirement and the requirement for a new binding on restart.",
+      "website_page": "/protocol/",
+      "source_sections": [
+        "5.5",
+        "5.6",
+        "6.5",
+        "7.1"
+      ],
+      "caption": "The named receiver phases separate admission, START acknowledgement, prefill, playback and draining. Every restart creates a new session rather than resetting counters inside the old one.",
+      "caution": "This is an explanatory phase diagram, not a complete normative event-transition table. The source prose does not fully tabulate state transitions for END arriving before prefill. END acceptance and final-range validation remain independent bookkeeping and must not bypass the prefill or complete-short-stream rule. A short stream starts only when its complete final range is buffered and FINAL_AUDIO plus END agree. An empty stream closes with END total_groups zero and no audio packet. OPEN and ARMED expire after two seconds without valid peer activity; running sessions abort after one second without valid peer traffic, while an audio deadline can act sooner. Loss of clock validity after START requires immediate safe mute and abort. Holdover retains a session only within declared clock and FIFO margins. STATUS does not authorise automatic resumption or a clock-mode change.",
+      "number": 7,
+      "filename": "07_session_lifecycle.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "430fa127dbc18d5579933a598f8e4b60c4edc9632e8e8848859ba5a2e5085286"
+    },
+    {
+      "title": "Common ordered finish and subsequent format change",
+      "purpose": "Show both legal END and FINAL_AUDIO orderings without mistaking an END response for proof that playback has finished.",
+      "website_page": "/protocol/",
+      "source_sections": [
+        "5.5",
+        "5.6",
+        "6.5",
+        "7.1"
+      ],
+      "caption": "END accepts the exclusive final group count. The receiver preserves prior in-flight audio, verifies the final range and retires it before a different format can play under a new session.",
+      "caution": "The compact exchange shows successful completion of a non-empty stream. Short streams may satisfy prefill through complete-final-range agreement; empty streams use END total_groups zero without FINAL_AUDIO. A missing FINAL_AUDIO still follows the loss policy. After a validated FINAL_AUDIO has played, waiting under mute for END is not an underrun. END and ABORT reply caches survive retirement for at least the retry duration plus admitted frame residence. OPEN may report BUSY while the old session drains; a subsequent new attempt uses a new transaction ID, while a retransmission of the identical request keeps its original ID. ABORT is the separate mute, flush and retire path when discarding the old stream is intended. The new session begins audio sequence numbering at zero only after its own successful START acknowledgement.",
+      "number": 8,
+      "filename": "08_ordered_finish_and_format_change.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "f9aafeb554d7e266e0f44e75a48656bda0c9c302b8db27f79bbae8f5e2e6bd6f"
+    },
+    {
+      "title": "Receiver ownership of conversion timing",
+      "purpose": "Separate serial clock recovery and transport-domain FIFO writes from receiver-owned audio-domain reads and D/A conversion.",
+      "website_page": "Clocking",
+      "source_sections": [
+        "§6.1",
+        "§6.2",
+        "§6.3",
+        "§7.1"
+      ],
+      "caption": "The optical receive path recovers transport symbols and validates complete frames. An independently engineered audio clock subsystem sets FIFO read timing and conversion cadence. Cumulative credits regulate delivery over the return fibre.",
+      "caution": "This is clock ownership, not a claim of zero jitter. Local supply coupling, clock-domain crossings and buffer faults still need validation. A 10 MHz input is mandatory on o2at-reference receivers, optional on o2at-basic, and does not discipline Ethernet or USB signalling clocks. The control arrow represents actual group retirement, not direct sampling of an unsafe cross-domain counter.",
+      "number": 9,
+      "filename": "09_conversion_clock_ownership.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "32f592d340786bf0eed9615ae87cac00456c8406ae2d3d46beb862ef26a3e25e"
+    },
+    {
+      "title": "Clock preparation and the START acceptance gate",
+      "purpose": "Explain the difference between preparing a selected clock at OPEN and authorising audio at START.",
+      "website_page": "Clocking",
+      "source_sections": [
+        "§5.5",
+        "§5.6",
+        "§6.2",
+        "§6.3"
+      ],
+      "caption": "OPEN may acquire the selected clock, while PING can expose acquisition progress. START succeeds only with valid conversion timing and, in common-reference mode, an established frequency relationship. Audio follows the acknowledgement and respects the initial cumulative grant.",
+      "caution": "clock_mode declares receiver-paced or established common-reference operation; it does not itself define an internal/external clock-source selection command. The diagram assumes that source selection has been configured through an implementation-defined mechanism. Shared frequency does not establish a shared sample epoch or zero jitter. The short-stream exception to ordinary prefill is omitted: complete final audio plus matching END can permit earlier playout.",
+      "number": 10,
+      "filename": "10_clock_selection_and_start_gate.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "016097dd10d8fee74e1cb883e7648703c9cf68b4b3787374e875d59e4d107f96"
+    },
+    {
+      "title": "Finite holdover and local protection after reference loss",
+      "purpose": "Make clock validity, finite holdover and FIFO headroom simultaneous conditions for retaining a live session.",
+      "website_page": "Clocking",
+      "source_sections": [
+        "§5.5",
+        "§5.6",
+        "§6.3",
+        "§6.5",
+        "§6.6"
+      ],
+      "caption": "A reference failure can enter holdover only while conversion timing remains valid and the declared time and FIFO limits remain satisfied. Otherwise the receiver mutes and aborts locally. STATUS is best effort and never delays protection; recovery after abort uses a new session.",
+      "caution": "The source requires controlled clock transitions but does not specify a complete same-session relock state machine after a reference returns. This diagram deliberately covers bounded holdover and fault restart, without inventing automatic relock or a live clock-mode switch. Exact validity thresholds and holdover drift limits require a documented, measured clock implementation.",
+      "number": 11,
+      "filename": "11_reference_loss_and_holdover.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "417ef5fe35703f650084c73da657d9d41d3fc3c7102f0f8d7603133ca9491586"
+    },
+    {
+      "title": "Three source rate-control cases",
+      "purpose": "Distinguish elastic playback, frequency-coherent live production and an independent unpausable live source.",
+      "website_page": "Clocking",
+      "source_sections": [
+        "§5.6",
+        "§6.4",
+        "§6.5"
+      ],
+      "caption": "Receiver credits regulate link delivery in every admitted mode. They can pace an elastic producer, but an independent fixed-rate live source needs a real clock relationship or explicitly selected conversion. A finite FIFO cannot absorb sustained rate mismatch indefinitely.",
+      "caution": "The conversion branch identifies a possible system remedy, not a rate-conversion algorithm or profile implemented by v0.2. Shared-reference operation still needs bounded burst and FIFO accounting, and shared frequency does not define the sample epoch. IEEE 802.3x PAUSE is supplementary adjacent-link control, not an end-to-end producer-rate servo.",
+      "number": 12,
+      "filename": "12_source_rate_control_cases.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "95423e02bcd425160a1fb0b7f10e33605aca6c64fd2a993903a59e3c4bdf9896"
+    },
+    {
+      "title": "Cumulative receiver credits and actual consumption",
+      "purpose": "Show the exclusive cumulative send limit and why repeated CREDIT messages do not multiply available storage.",
+      "website_page": "Protocol and reliability",
+      "source_sections": [
+        "§5.5",
+        "§5.6",
+        "§6.5"
+      ],
+      "caption": "The source may send only when sent_end_group + packet_groups <= grant_end_group. The receiver honours already granted space, including groups in flight, and updates consumed_groups from actual audio-side retirement. Grants cannot be retracted; repeated and older notifications do not create extra credit.",
+      "caution": "The diagram abstracts control/session validation and the clock gate, which must already have passed. It does not prescribe a new numerical grant formula. Credit accounting must include validated storage, current occupancy and outstanding data; the latest cumulative grant is repeated within the negotiated interval. Clock-domain transfer of retirement counters needs a coherent implementation.",
+      "number": 13,
+      "filename": "13_cumulative_credit_flow.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "4e189030faf4f03c85e0e218659b57358ccdea75a171db7e55a631095a1ce702"
+    },
+    {
+      "title": "A packet gap retains its original playout deadline",
+      "purpose": "Show how an optional bounded reorder buffer differs from timeline compression or indefinite waiting.",
+      "website_page": "Protocol and reliability",
+      "source_sections": [
+        "§5.6",
+        "§6.5",
+        "§7.1"
+      ],
+      "caption": "A later packet can wait in a qualified bounded reorder buffer while an earlier range is missing. If that range misses its original playout deadline, the basic profile safely mutes and aborts. Duplicate and late audio is discarded without replaying samples or closing the timing gap.",
+      "caution": "Reordering support is optional and must fit the admitted window. The successful branch represents delayed delivery, not mandatory audio retransmission. Concealment would need a future explicitly negotiated policy. Safe DSD protection means converter mute or a validated idle/transition sequence, not blindly substituting all-zero bits.",
+      "number": 14,
+      "filename": "14_packet_gap_and_playout_deadline.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "1651a39beb0c633a1e744aa102f64d302974059661f574ae550c91e891ff4bbb"
+    },
+    {
+      "title": "Proposed asynchronous USB audio to o2at feedback bridge",
+      "purpose": "Connect receiver consumption and cumulative credits to a genuine USB audio feedback controller without conflating audio delivery and bus timing.",
+      "website_page": "Implementation and bridges",
+      "source_sections": [
+        "§5.5",
+        "§5.6",
+        "§6.1",
+        "§6.4",
+        "§7.3",
+        "§7.4"
+      ],
+      "caption": "A proposed bridge compares downstream cumulative group consumption with its observed USB microframe count, filters bounded reporting variation and regulates source-buffer occupancy. Feedback changes the host's average sample delivery while the receiver retains conversion-clock authority.",
+      "caution": "This is a proposed bridge, not a documented internal schematic of the N30SA, existing LAiV µDDC or Harmony DAC. The µDDC relationship between external reference and USB feedback remains undocumented in the reviewed public specifications. PCM and vendor-specific native DSD require explicit USB-unit mappings, endpoint/driver qualification and loop-stability tests. O2AT capacity does not prove that USB ingress or the DAC egress supports the same extreme formats.",
+      "number": 15,
+      "filename": "15_usb_audio_feedback_bridge.mmd",
+      "status": "Proposed bridge derived from v0.2",
+      "source_sha256": "54a3386f43d0fa2e8c2d261797663e275a96a150b5cf8a571f112085aa53c135"
+    },
+    {
+      "title": "Admission decision for a proposed legacy PCM input bridge",
+      "purpose": "Expose the live-clock condition required for a transparent legacy-input bridge and mark future ADAT and source-clock-tracking work as conditional.",
+      "website_page": "Implementation and bridges",
+      "source_sections": [
+        "§4.3",
+        "§5.6",
+        "§6.4",
+        "§6.5"
+      ],
+      "caption": "Legacy live inputs continue at their originating device's rate and cannot consume o2at credits. A proposed bridge must qualify framing and channel order, then establish a real coherent audio-clock relationship or use an explicitly selected conversion path before normal O2AT admission.",
+      "caution": "This is a conditional design decision, not an implemented ADAT, S/MUX or source-clock-tracking profile. The PCM scope does not add an opaque compressed-audio transport. A future tracking profile needs its own estimator, servo and jitter-transfer specification; it must not connect the recovered optical serial clock directly to D/A conversion. Buffering and PAUSE alone cannot stabilise an independent unpausable source.",
+      "number": 16,
+      "filename": "16_legacy_input_clock_decision.mmd",
+      "status": "Proposed bridge derived from v0.2",
+      "source_sha256": "85d6e61498a7dadd9e4b6903d6be564cbf84d042634113d6d1c5f56e6e20fc26"
+    },
+    {
+      "title": "Direct and switched topologies",
+      "purpose": "Contrast the mandatory direct 1G connection with an optional qualified Ethernet fabric, while distinguishing end-to-end credits from hop-local PAUSE.",
+      "website_page": "How it works",
+      "source_sections": [
+        "4.1",
+        "4.2",
+        "5.1",
+        "5.3",
+        "5.6",
+        "6.4",
+        "7.2"
+      ],
+      "caption": "The consumer baseline uses a direct 1G optical connection. An optional fabric can bridge admitted traffic from 1G ports or 10G aggregation within one Layer-2 domain. Receiver credits reach the appropriate source; PAUSE applies only to an adjacent MAC. Packet-switch qualification does not establish transparent timing-reference transfer.",
+      "caution": "The two source paths illustrate alternatives or admitted sessions, not unrestricted simultaneous streams to one receiver. A bridge is not an IP router. Fibre isolation applies to the signal link; clock coax and other cables may provide parallel conductive paths. Switch configuration and mixed-speed burst limits require qualification. Ordinary switch retiming breaks an assumed PHY-derived DAC frequency reference unless a separately qualified clock-aware mechanism exists. A proposed dedicated return-clock path may bypass the data switch. Integrated or split timing-transfer extensions are not yet specified by v0.2.",
+      "number": 17,
+      "filename": "17_direct_and_switched_topology.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "bea9ad7199b9c80e4ee742c9e017bb3f515cc0c6ba7d736b2e83f6f98eab08d5"
+    },
+    {
+      "title": "Switched-path admission",
+      "purpose": "Show why aggregate bandwidth arithmetic alone is insufficient to admit a switched or mixed-speed path.",
+      "website_page": "How it works",
+      "source_sections": [
+        "5.3",
+        "5.6",
+        "5.8",
+        "6.5",
+        "7.2"
+      ],
+      "caption": "Admission evaluates the actual forwarding policy, every egress budget, queue exposure to bursts, and the control round trip. Receiver credits remain end-to-end, while intermediate queues also need bounded traffic. Qualify the required clock relationship independently of packet admission.",
+      "caution": "PCP 6 is an optional scheduling request, not a reservation or a latency guarantee. The direct-link 85% ceiling does not supply a universal switched-path ceiling. This diagram organises engineering checks rather than defining a new admission message exchange. An ordinary packet switch does not preserve an assumed DAC-originated PHY frequency reference. A clock-aware path or dedicated clock route needs its own specification and validation; proposed clock-transfer extensions are outside the present v0.2 definition.",
+      "number": 18,
+      "filename": "18_switched_path_admission.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "bb0e96a055785d9d6ff7df074b069d664cdc71ec8810533a1026e2d74f87824c"
+    },
+    {
+      "title": "Validated frame commit and clock-domain crossing",
+      "purpose": "Locate full-frame validation ahead of playback and show the separation between recovered link timing and conversion timing.",
+      "website_page": "Build and test",
+      "source_sections": [
+        "5.6",
+        "6.1",
+        "6.5",
+        "7.1"
+      ],
+      "caption": "The illustrated implementation stages each complete frame, checks FCS and protocol validity, then commits coherent audio groups to a dual-clock FIFO. A qualified conversion-clock subsystem controls group retirement and the converter interface. Pointer transfer, reset release and CDC timing still require review.",
+      "caution": "Complete-frame staging is one permitted implementation; an atomic rollback design is acceptable only if corrupt groups can never become visible to playback. Rejected foreign traffic does not itself mute an unrelated session. Output protection follows confirmed active-stream faults. No FIFO or FPGA PLL eliminates oscillator phase noise or local coupling.",
+      "number": 19,
+      "filename": "19_clock_domain_crossing.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "d434c94846fe86ecfc256481981457394bf53e113c8cda4b9b402e3bb4dcdc12"
+    },
+    {
+      "title": "Receiver power and RF partitioning",
+      "purpose": "Explain the local engineering work that remains after the optical signal link provides galvanic isolation.",
+      "website_page": "Build and test",
+      "source_sections": [
+        "4.2",
+        "5.1",
+        "5.2",
+        "6.3",
+        "7.1"
+      ],
+      "caption": "Separate the placement and power-integrity analysis of the optical and digital circuitry from the sensitive clock and analogue paths. Validate the actual module, return-current structure, thermal design and measured coupling. A shared reference-clock coax may electrically reconnect chassis.",
+      "caution": "This is a conceptual block partition, not an analogue schematic or a prescription to split ground planes, remove safety earth or require separate power supplies. Arrows labelled power identify functional supply paths, not galvanic barriers. Neither 1G operation nor a non-retimed module guarantees a particular analogue result.",
+      "number": 20,
+      "filename": "20_receiver_power_and_rf_partitioning.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "17419bffbdfec834b348eb80dabf196602205cf2cc9afee34ecad610b4c6ee14"
+    },
+    {
+      "title": "Link, session and clock diagnostics",
+      "purpose": "Translate the draft diagnostic requirements into distinct user-visible outcomes and useful engineering counters.",
+      "website_page": "How it works",
+      "source_sections": [
+        "5.1",
+        "5.6",
+        "6.5",
+        "8"
+      ],
+      "caption": "A physical link, an admitted audio session and valid conversion timing are separate states. Present all three clearly, show only verified format capabilities, and expose counters and the qualified latency configuration when diagnosing a fault.",
+      "caution": "Display updates and best-effort STATUS delivery must never delay local safe mute or abort. Declared holdover is valid only within its clock and FIFO bounds. Diagnostic access may be local or optional; a management application is not required for basic direct playback.",
+      "number": 21,
+      "filename": "21_user_diagnostics.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "bbd77a270d0fa7f1433ade91bdc77ba6a3981f1b4b0e5bd879a39927c917d193"
+    },
+    {
+      "title": "Proposed prototype validation workflow",
+      "purpose": "Organise the paper's validation programme into a reproducible engineering workflow suitable for the build page.",
+      "website_page": "Build and test",
+      "source_sections": [
+        "7.2",
+        "7.3",
+        "9.2",
+        "9.4"
+      ],
+      "caption": "Editorial workflow recommendation, not a normative protocol message sequence. Establish test vectors and acceptance criteria, implement the path, measure it, inject faults and publish reproducible evidence with its limitations.",
+      "caution": "The order is a recommended project workflow, not an additional conformance requirement. It makes no claim that a working O2AT prototype, independent peer review or completed performance measurements exist. Extreme-rate transport tests do not establish that an existing USB source or DAC supports those rates.",
+      "number": 22,
+      "filename": "22_prototype_validation_workflow.mmd",
+      "status": "Proposed editorial or release workflow",
+      "source_sha256": "fc55033f5c994c7f33168d26ec29d4c19dd7d5946a70fcc12b129f93d4f5f76a"
+    },
+    {
+      "title": "Proposed interoperability and release gates",
+      "purpose": "Keep publication and conformance claims tied to independent implementations, qualified parts and safe failure behaviour.",
+      "website_page": "Build and test",
+      "source_sections": [
+        "5.3",
+        "9.2",
+        "9.3",
+        "9.4"
+      ],
+      "caption": "Editorial workflow recommendation, not a normative protocol message sequence. The proposed programme requires independent interoperability evidence, qualified baseline optics and resolved output-safety failures. Fabric claims require a documented switched configuration, and public commercial deployment needs a proper protocol identifier. Any proposed clock-transfer extension also needs an explicit timing specification and independent path qualification.",
+      "caution": "The two-source and two-receiver criterion follows the measurable validation programme in section 9.2. EtherType 0x88B5 remains experimental. Passing these project gates does not confer external standards approval, legal clearance or manufacturer endorsement, and the governance process remains proposed. The conditional clock-transfer gate is an editorial extension of the release programme, not a requirement already defined in v0.2. Packet interoperability alone does not establish timing-reference continuity through switches, and a dedicated clock path may bypass them.",
+      "number": 23,
+      "filename": "23_interoperability_release_gates.mmd",
+      "status": "Proposed editorial or release workflow",
+      "source_sha256": "acda9023bcbad2ded927c0b017790981c99166c3aaeb97a564b525135d2349e5"
+    },
+    {
+      "title": "Proposed contribution and change control",
+      "purpose": "Provide an actionable public review route that preserves source traceability, compatibility reasoning and versioned decisions.",
+      "website_page": "Contribute",
+      "source_sections": [
+        "4.2",
+        "9.3",
+        "9.4"
+      ],
+      "caption": "Editorial workflow recommendation, not a normative protocol message sequence. Contributions identify the affected draft and evidence, receive compatibility and licence review, and lead to a recorded decision. Accepted changes update the relevant specification, registry, tests and release history.",
+      "caution": "The submission fields and review ordering are website governance recommendations derived from the paper, not adopted policy or evidence that a formal governing organisation exists. Proposed open licences and third-party obligations must remain distinct; no licence is presented as patent clearance or certification.",
+      "number": 24,
+      "filename": "24_contribution_and_change_control.mmd",
+      "status": "Proposed editorial or release workflow",
+      "source_sha256": "bcfaa1ec53a00c510588afc8f4a9c76bf55c70b7252c6f3d20221dada00f2a18"
+    },
+    {
+      "title": "Type 1: integrated audio and forward frequency reference",
+      "purpose": "Show the requested single-connection option with an explicitly source-owned audio reference.",
+      "website_page": "Clocking / Proposed architectures",
+      "source_sections": [
+        "Proposed extension",
+        "WP 6.1-6.3",
+        "E01"
+      ],
+      "caption": "Proposed Type 1: the transport's audio master has a defined relationship to the continuous forward optical line. The DAC disciplines a local audio oscillator from the recovered reference, then reads the FIFO and performs conversion with that local clock. The ordinary return control path remains present.",
+      "caution": "One pipe here means one logical duplex connection, not a claim that all traffic travels in one physical fibre. This frequency-transfer mechanism is not defined by v0.2. Directly connecting a raw CDR output to the converter is not proposed. Clock ratios, noise transfer, holdover and capability signalling require specification and qualification. The nominal Ethernet rate remains fixed; a sample-rate change alters the declared synthesis/divider relationship, not the Ethernet link speed.",
+      "number": 25,
+      "filename": "25_type1_integrated_forward_reference.mmd",
+      "status": "Proposed optical clock-transfer extension",
+      "source_sha256": "51d0ecfa05737a4a4dcc6d81d613372463e918e89670481fefc37499f5471f43"
+    },
+    {
+      "title": "Type 2: DAC-master timing returned to the transport",
+      "purpose": "Express the requested separation of forward stereo data and upstream timing authority.",
+      "website_page": "Home / Clocking / Proposed architectures",
+      "source_sections": [
+        "Proposed extension",
+        "WP 5.6",
+        "WP 6.1-6.5"
+      ],
+      "caption": "Proposed Type 2: the DAC clock governs local FIFO reads and conversion, and sends a reference upstream. The transport follows that reference for audio production and sends both stereo channels together within the receiver's cumulative credit grant.",
+      "caution": "This is a logical architecture. The dotted control arrow does not imply a third physical fibre: its carriage must be defined by the chosen implementation, as illustrated in diagrams 27 and 28. Frequency coherence does not establish a shared sample epoch, eliminate all jitter or remove finite-buffer protection. No new wire-profile identifier is allocated here.",
+      "number": 26,
+      "filename": "26_type2_dac_master_concept.mmd",
+      "status": "Proposed optical clock-transfer extension",
+      "source_sha256": "d574739892b5bd223ddc25d16cb2c7148c23cadf06ecc4c8e63762054c3685d1"
+    },
+    {
+      "title": "Type 2 candidate A: frequency transfer over the reverse Ethernet line",
+      "purpose": "Show how one SFP module at each end and one duplex LC pair might support the requested directional roles while preserving Ethernet control.",
+      "website_page": "Clocking / Build and test",
+      "source_sections": [
+        "Proposed extension",
+        "WP 5.1",
+        "WP 5.6",
+        "WP 6.1",
+        "E01",
+        "E02"
+      ],
+      "caption": "Candidate A retains valid 1000BASE-X signalling in both directions. The DAC's reverse transmitter follows a qualified frequency relationship to its audio clock. The transport extracts the continuous line reference before any elasticity that would replace it with a local clock, cleans it and disciplines audio production. Reverse control frames continue normally.",
+      "caution": "The reverse fibre is not an unmodulated raw-clock wire: it carries an encoded Ethernet line with control traffic and idle symbols, and clock recovery remains necessary. Preserve Ethernet tolerances, auto-negotiation and link fault behaviour. Use a direct path or separately qualified frequency-aware topology. This diagram does not assert SyncE compliance, a completed clock plan or a measured implementation. Never feed the forward recovered reference back into the DAC master loop. The nominal Ethernet rate remains fixed; a sample-rate change alters the declared synthesis/divider relationship, not the Ethernet link speed.",
+      "number": 27,
+      "filename": "27_type2_duplex_ethernet_frequency_candidate.mmd",
+      "status": "Proposed optical clock-transfer extension",
+      "source_sha256": "63aec6c94e0878abed8eb20788f7129b830af1f9102aa4645814d73008660aec"
+    },
+    {
+      "title": "Type 2 candidate B: a genuinely separate optical reference link",
+      "purpose": "Keep the timing path separate from the ordinary duplex Ethernet data and control connection.",
+      "website_page": "Clocking / Build and test",
+      "source_sections": [
+        "Proposed extension",
+        "WP 5.1",
+        "WP 5.6",
+        "WP 6.3",
+        "E03"
+      ],
+      "caption": "Candidate B keeps the existing duplex data link intact and adds a dedicated DAC-to-transport optical reference path. The reference can bypass the packet switch. The data link continues carrying stereo audio in one direction and receiver control in the other.",
+      "caution": "This requires additional optical hardware and fibre unless a separately specified multiplexing scheme is introduced. The clock channel needs its own waveform or encoding, optical and electrical limits, rate range, duty-cycle behaviour, acquisition, loss detection and jitter budget. An ordinary SFP data sheet does not automatically qualify raw 10 MHz, word-clock or I2S transmission.",
+      "number": 28,
+      "filename": "28_type2_separate_optical_reference_link.mmd",
+      "status": "Proposed optical clock-transfer extension",
+      "source_sha256": "f32a2354e15d861d7a4f2081cbfbbf048fc2cb080f233c2dcc1a522af964ea66"
+    },
+    {
+      "title": "Proposed Type 2 acquisition, holdover and fault workflow",
+      "purpose": "Identify the readiness and protection conditions the new DAC-master extension must define.",
+      "website_page": "Clocking / Build and test",
+      "source_sections": [
+        "Proposed extension workflow",
+        "WP 5.6",
+        "WP 6.3-6.5"
+      ],
+      "caption": "The proposed extension establishes one DAC master, verifies the transport's recovered reference and frequency ratio, and then uses the existing START, credit and prefill model. A disturbed reference may continue only within declared clock and FIFO limits. Local protection precedes a non-blocking fault-report attempt and session retirement.",
+      "caution": "This is a design workflow, not a defined new wire sequence. Endpoint readiness exchange and fault-report details remain to be specified. Each endpoint protects its own resources; a remote endpoint cannot react to an unreported fault before receiving evidence or reaching its own deadline. A reference-tier receiver follows v0.2's best-effort STATUS rule using the active session binding before retirement, without delaying local mute.",
+      "number": 29,
+      "filename": "29_type2_acquisition_and_fault_workflow.mmd",
+      "status": "Proposed optical clock-transfer extension",
+      "source_sha256": "3c5f4097dfeea7367af24487ef6f47f1294624c6bf624c05a3206afa445b1507"
+    },
+    {
+      "title": "Stereo coherence without separate optical left and right links",
+      "purpose": "Show that complete stereo groups travel together and are released under a common receiver audio clock.",
+      "website_page": "How it works / Clocking",
+      "source_sections": [
+        "WP 4.2",
+        "WP 5.6-5.7",
+        "WP 6.1"
+      ],
+      "caption": "Left and right occupy one indexed group in the same framed stream. After validation and buffering, the receiver releases both under a common audio cadence. Separate internal converter lanes do not require separate optical data links.",
+      "caution": "Discarding unrelated malformed or foreign traffic must not mute an admitted stream. Only a confirmed active-stream condition invokes its protection policy. Common transport scheduling does not establish identical analogue channel delays or automatically align two independent DAC chassis.",
+      "number": 30,
+      "filename": "30_stereo_group_integrity.mmd",
+      "status": "Current v0.2 explanatory workflow",
+      "source_sha256": "d0360e68b1b64419a3938c6d6b1e27eae520d9a13ee86cb00244f70b2b4b7124"
+    },
+    {
+      "title": "Proposed clock generator and optical reference hub",
+      "purpose": "Introduce a clock generator or bridge as a new device role that can supply the chosen timing authority in either Type 1 or Type 2.",
+      "website_page": "Clocking",
+      "source_sections": [
+        "Whitepaper §6.2",
+        "Whitepaper §6.3",
+        "Proposed clock-hub device role and optical reference extension"
+      ],
+      "caption": "The proposed hub offers separately engineered 50 Ω and 75 Ω 10 MHz BNC output classes and an SFP-terminated optical reference service. The selected source remains the frequency authority in Type 1, while the DAC remains the downstream audio-clock authority in Type 2. This adds a device role, not a third architecture.",
+      "caution": "The optical clock service is not defined by v0.2 and no wire allocation, optical waveform or existing product conformance is implied. A normal SFP module is not automatically suitable for an arbitrary raw 10 MHz signal. Each BNC class requires its own matched driver, specified load and amplitude convention; an adapter does not change impedance. BNC shields can create conductive paths even when the audio connection is optical. No manufacturer participation or endorsement is asserted.",
+      "number": 31,
+      "filename": "31_clock_distribution_hub.mmd",
+      "status": "Proposed clock-hub device role and service",
+      "source_sha256": "99de233bc524c5f3c4141401fc053b1b4b733c09bc8bd94864867dff569c1fef"
+    },
+    {
+      "title": "Recommended Type 2 hierarchy with a clock hub",
+      "purpose": "Keep a single directed timing hierarchy from hub to DAC audio clock to transport production, while distinguishing timing transfer from audio packets and buffer credits.",
+      "website_page": "Clocking",
+      "source_sections": [
+        "Whitepaper §5.5",
+        "Whitepaper §5.6",
+        "Whitepaper §6.1",
+        "Whitepaper §6.2",
+        "Whitepaper §6.4",
+        "Proposed Type 2 clock-transfer and clock-hub extensions"
+      ],
+      "caption": "The hub disciplines the DAC's local audio clock. The DAC then originates the timing reference followed by the transport, which sends stereo audio within receiver grants. The DAC requires a suitable hub-reference input and a distinct transport-facing interface. Forward audio, returned timing and returned control are separate logical services.",
+      "caution": "The timing and control arrows do not allocate an additional channel within current v0.2. Their physical carriage must be defined by a qualified future profile, such as the reverse Ethernet frequency-transfer candidate or a separate optical timing path. One ordinary SFP port cannot independently terminate both a hub link and a transport link. The diagram is a functional view and does not prescribe a specific transceiver or PLL. The Type 1 counterpart would instead discipline the source authority; it must not create a competing DAC-to-source clock loop. Shared frequency does not establish phase or sample-epoch alignment.",
+      "number": 32,
+      "filename": "32_hub_dac_transport_clock_hierarchy.mmd",
+      "status": "Proposed clock-hub device role and service",
+      "source_sha256": "3cbc6f595d45c92e3542cd61d14be680bd461d195c1a8079e57e9a9195cedccd"
+    },
+    {
+      "title": "Acceptance of an actual reference-discipline design",
+      "purpose": "Answer the drift and weak-discipline question with observable clock-path and system-level acceptance criteria rather than inferring quality from fibre or a lock indicator.",
+      "website_page": "Clocking",
+      "source_sections": [
+        "Whitepaper §6.1",
+        "Whitepaper §6.2",
+        "Whitepaper §6.3",
+        "Whitepaper §6.5",
+        "Whitepaper §6.6",
+        "Proposed clock-hub and optical reference qualification"
+      ],
+      "caption": "Optical transport can remove a conductive reference path, but effective discipline depends on the real clock path, programmed ratios, loop design and operating conditions. Qualification separately measures relative drift, FIFO behaviour, phase noise and absolute accuracy. Absolute accuracy requires an independent reference.",
+      "caution": "A shared source can suppress relative frequency error in a properly implemented hierarchy without eliminating source frequency error, residual loop noise or startup phase ambiguity. Measurements of two clocks derived from the same reference do not establish that reference's absolute accuracy. Phase-noise integration limits, timing-error definitions and acceptance bounds must be declared. This is a proposed validation workflow, not evidence that a particular hub or O2AT prototype has passed it.",
+      "number": 33,
+      "filename": "33_reference_discipline_acceptance.mmd",
+      "status": "Proposed clock-hub device role and service",
+      "source_sha256": "f191b2082a8e75dec5c9fe6b882e96d8cad10eab1f1250b8d82d58099b2f1cb1"
+    },
+    {
+      "title": "Reference loss and explicit recovery in a proposed hub hierarchy",
+      "purpose": "Apply finite holdover, independent local protection and explicit restart to failures anywhere in the proposed timing hierarchy.",
+      "website_page": "Clocking",
+      "source_sections": [
+        "Whitepaper §5.5",
+        "Whitepaper §5.6",
+        "Whitepaper §6.3",
+        "Whitepaper §6.5",
+        "Whitepaper §6.6",
+        "Proposed clock-hub and Type 1/Type 2 recovery extension"
+      ],
+      "caption": "Each affected endpoint monitors its required local audio clock and buffer limits. Holdover can retain operation only within declared valid timing and finite FIFO margins. Invalidity or expiry triggers local mute or source stop and abort, followed by a non-blocking fault-report attempt, retirement, explicit reacquisition and a new session.",
+      "caution": "The STATUS attempt never waits for delivery and cannot delay local protection. Remote endpoints retain their own clock, liveness and playout-deadline protection even if the notification is lost. Hub-originated reporting and follower-readiness signalling are not new v0.2 wire allocations; a future profile must define their carriage. Clock-state changes within valid holdover still require the applicable status reporting. A returned reference does not by itself authorise resumption, and no automatic switch to an unrelated master is implied. The short-stream prefill exception remains applicable.",
+      "number": 34,
+      "filename": "34_hub_reference_loss_and_recovery.mmd",
+      "status": "Proposed clock-hub device role and service",
+      "source_sha256": "8c61e90b02b5d79facdf8b0f08e08ad82117dbc82618678c22df3c27d4a0aca9"
+    }
+  ]
+}

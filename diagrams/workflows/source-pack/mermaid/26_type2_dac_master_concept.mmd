@@ -1,0 +1,19 @@
+flowchart TD
+    accTitle: Type 2 proposed DAC-master data and timing pipes
+    accDescr: The DAC clock directly governs conversion and originates an upstream optical timing reference. The transport follows that reference for audio production, sends both stereo channels together, and still obeys receiver credits.
+    subgraph dac["DAC: timing authority"]
+        MASTER["DAC audio master"] -. "Conversion cadence" .-> CONVERT["Stereo D/A conversion"]
+        MASTER -. "Defined ratio" .-> TIMETX["Optical timing transmitter"]
+        RECEIVE["DAC FPGA: data validation"] --> FIFO["Audio FIFO"]
+        MASTER -. "FIFO read cadence" .-> FIFO
+        FIFO --> CONVERT
+        FIFO --> CREDIT["Buffer and credit accounting"]
+    end
+    subgraph transport["Transport: timing follower"]
+        TIMERX["Optical timing receiver"] --> CLEAN["Qualified reference recovery and discipline"]
+        CLEAN -. "Audio production cadence" .-> PRODUCE["Transport FPGA: stereo production"]
+        PRODUCE --> TRANSMIT["Packetiser and optical data transmitter"]
+    end
+    TIMETX ==>|"Pipe 2: DAC-originated timing"| TIMERX
+    TRANSMIT ==>|"Pipe 1: left and right together"| RECEIVE
+    CREDIT -. "CREDIT and STATUS on specified return carriage" .-> TRANSMIT

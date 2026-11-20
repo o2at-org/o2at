@@ -1,0 +1,32 @@
+flowchart TD
+    accTitle: Three source rate-control cases
+    accDescr: Elastic sources follow receiver demand, coherent live sources still obey cumulative credits, and an independent unpausable source needs real clock control, explicit rate conversion or rejection of transparent operation.
+    START["Identify the real sample-production clock"]
+    ELASTIC{"Can production follow receiver demand?"}
+    FETCH["Elastic stored or generated playback"]
+    SHARED{"Actual source and DAC clocks share an established coherent reference?"}
+    SYNC["Verify audio frequency plans and relative drift"]
+    CREDIT["Obey cumulative receiver credits"]
+    CHECK["Bound upstream storage and verify FIFO occupancy"]
+    LIVE["Independent unpausable live source"]
+    FINITE["Finite buffer margin erodes under sustained rate mismatch"]
+    REMEDY{"Which explicit remedy is available?"}
+    LOCK["Establish a real clock relationship before admission"]
+    CONVERT["Separately specified and selected rate-conversion path"]
+    REJECT["Reject transparent operation"]
+    START --> ELASTIC
+    ELASTIC -->|"Yes"| FETCH
+    FETCH --> CREDIT
+    ELASTIC -->|"No"| SHARED
+    SHARED -->|"Yes"| SYNC
+    SYNC --> CREDIT
+    CREDIT --> CHECK
+    SHARED -->|"No"| LIVE
+    LIVE --> FINITE
+    FINITE --> REMEDY
+    REMEDY -->|"Control the real clock"| LOCK
+    LOCK --> CREDIT
+    REMEDY -->|"Explicit conversion"| CONVERT
+    REMEDY -->|"Neither"| REJECT
+    NOTE["PAUSE regulates the adjacent MAC; it cannot stop an independent producer clock"]
+    NOTE -.-> FINITE

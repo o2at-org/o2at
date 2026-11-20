@@ -1,0 +1,27 @@
+flowchart TD
+    accTitle: Receiver ownership of conversion timing
+    accDescr: Ethernet clock recovery serves transport and FIFO writes. A separate local audio clock subsystem controls FIFO reads and D/A conversion. Receiver credits regulate source delivery.
+    SRC["Audio source"]
+    OPT["1G optical Ethernet"]
+    RX["SFP optical front end and host SerDes CDR/PCS"]
+    MAC["MAC and complete-frame validation"]
+    FIFO["Dual-clock audio FIFO"]
+    DAC["Converter interface and D/A conversion"]
+    INT["Internal audio oscillator"]
+    EXT["10 MHz input: required on o2at-reference"]
+    SYN["Discrete audio synthesis and local clock selection"]
+    CTRL["Receiver credit control"]
+    SRC --> OPT
+    OPT --> RX
+    RX -->|"Recovered symbols and transport timing"| MAC
+    MAC -->|"Accepted audio groups"| FIFO
+    MAC -.->|"Transport-domain write clock"| FIFO
+    FIFO -->|"Audio data"| DAC
+    INT -->|"Internal mode"| SYN
+    EXT -->|"External reference mode"| SYN
+    SYN -.->|"Audio-domain read clock"| FIFO
+    SYN -.->|"Conversion cadence"| DAC
+    FIFO -->|"Actual group retirement"| CTRL
+    CTRL -.->|"Return fibre: cumulative credits"| SRC
+    NOTE["Packet delay changes FIFO occupancy; it is not the conversion-clock reference"]
+    NOTE -.-> FIFO

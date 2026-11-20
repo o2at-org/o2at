@@ -1,0 +1,31 @@
+---
+config:
+  theme: mc
+---
+sequenceDiagram
+    accTitle: Proposed asynchronous USB audio to o2at feedback bridge
+    accDescr: A proposed bridge estimates downstream group consumption against observed USB microframes and regulates its source buffer. Feedback changes the host's average audio delivery, not the USB bus clock or the DAC conversion reference.
+    participant H as USB audio host
+    participant B as Proposed UAC2/o2at bridge
+    participant R as O2AT receiver
+    participant A as Audio-domain playout
+    Note over H,A: Proposed bridge architecture, not a disclosed internal design of the existing N30SA, µDDC or Harmony
+    loop During an admitted session
+        H->>B: USB SOF and microframe timing
+        H->>B: Isochronous audio packets
+        B->>B: Buffer audio and map USB sample units to o2at groups
+        R-->>B: credit_state with grant_end_group and consumed_groups
+        B->>B: Check the cumulative send limit
+        B->>R: AUDIO within the grant
+        R->>A: Fully validated audio groups
+        A->>A: Retire groups under the local audio clock
+        A-->>R: Update actual consumed_groups
+        R-->>B: Latest cumulative credit_state
+        B->>B: Estimate consumption over observed USB microframes
+        B->>B: Filter bounded report delay and regulate source-buffer occupancy
+        B-->>H: Asynchronous audio feedback in advertised USB units
+        H->>H: Adjust average audio samples delivered per USB interval
+    end
+    Note over H,B: Feedback does not discipline the host USB signalling clock
+    Note over R,A: Packet interarrival timing is not the conversion-clock reference
+    Note over B,R: PCM and native DSD need explicit, format-specific unit mappings

@@ -1,0 +1,33 @@
+flowchart TD
+    accTitle: Common optical Ethernet link startup
+    accDescr: Qualify the 1G optical hardware, establish a full-duplex Ethernet link, then allow o2at discovery while audio remains muted.
+    Power["Sequence host and module power; keep audio muted"]
+    Present{"SFP present at both ends?"}
+    Absent["Report absent module; wait for insertion"]
+    Qualified{"Matched, qualified 1000BASE-SX optics and fibre?"}
+    Unsupported["Keep optical transmission disabled; report incompatibility"]
+    Enable["Enable optical transmitters; monitor loss of signal and faults"]
+    Signal{"Both optical paths available without a module fault?"}
+    Repair["Report optical fault; retain safe mute"]
+    PCS["Establish 1000BASE-X PCS/PMA at 1.25 GBd"]
+    Negotiate["Enable auto-negotiation; advertise full duplex"]
+    Link{"1G full-duplex link established?"}
+    LinkFault["Report link fault; keep audio muted"]
+    Report["Report link speed, duplex and module diagnostics"]
+    Discover["Permit o2at HELLO discovery"]
+    Power --> Present
+    Present -- No --> Absent
+    Absent --> Present
+    Present -- Yes --> Qualified
+    Qualified -- No --> Unsupported
+    Qualified -- Yes --> Enable
+    Enable --> Signal
+    Signal -- No --> Repair
+    Repair --> Signal
+    Signal -- Yes --> PCS
+    PCS --> Negotiate
+    Negotiate --> Link
+    Link -- No --> LinkFault
+    LinkFault --> Negotiate
+    Link -- Yes --> Report
+    Report --> Discover

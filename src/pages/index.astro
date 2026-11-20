@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ArchitectureDiagram from '../components/ArchitectureDiagram.astro';
 ---
 <BaseLayout title="Open Optical Audio Transport" description="An open Layer 2 optical audio proposal centred on a 1G SFP baseline, with receiver-owned conversion timing and a measurable engineering path.">
-  <section class="hero wrap hero-grid">
+  <section class="hero wrap">
     <div class="hero-copy">
       <span class="draft-tag">v0.2 engineering draft · for review</span>
       <p class="eyebrow hero-label">Open audio architecture</p>
@@ -12,8 +12,9 @@ import ArchitectureDiagram from '../components/ArchitectureDiagram.astro';
       <div class="actions"><a class="button" href="/specification/">Read the v0.2 specification</a><a class="button secondary" href="/explore/">Open the engineering lab</a></div>
       <p class="help hero-qualification">A proposal for engineering and community review. There is no claim of a working O2AT prototype or shipping product.</p>
     </div>
-    <ArchitectureDiagram />
   </section>
+
+  <section class="section section-top"><div class="wrap"><ArchitectureDiagram /></div></section>
 
   <section class="section section-top"><div class="wrap">
     <p class="eyebrow">The design in three decisions</p><h2>A practical baseline, with limits in view.</h2>

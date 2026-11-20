@@ -1,0 +1,32 @@
+---
+config:
+  theme: mc
+---
+sequenceDiagram
+    accTitle: Common peer discovery and session negotiation
+    accDescr: HELLO reports capabilities, OPEN admits an immutable context, and a successful START permits audio prefill under receiver credits.
+    participant T as Transport
+    participant R as DAC receiver
+    T->>R: HELLO, session ID 0 and nonce 0
+    R-->>T: Capabilities and reference-tier clock_status
+    T->>T: Select an advertised format and channel map
+    T->>R: OPEN, ID 0, fresh nonce and mandatory descriptors
+    R->>R: Admit format, packet profile and selected clock arrangement
+    R-->>T: Accepted context, nonzero session ID and echoed nonce
+    Note over T,R: Controls bind the MAC pair, VLAN context, session ID and nonce
+    opt Reference-tier clock acquisition is pending
+        T->>R: PING with the admitted context
+        R-->>T: Matching response and clock_status
+    end
+    T->>R: START with session ID and nonce
+    R->>R: Check clock validity and any required frequency relationship
+    alt START can succeed
+        R-->>T: START acknowledgement and initial credit_state
+        T->>R: Audio within the cumulative credit grant
+        R->>R: Fill the agreed prefill, then start playback
+    else START cannot succeed
+        R-->>T: Failed control response
+        Note over T,R: Audio is not permitted before a successful START acknowledgement
+    end
+    Note over T,R: Retry an identical request with the same transaction ID
+    Note right of R: Cached responses prevent duplicate side effects

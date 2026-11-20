@@ -1,0 +1,31 @@
+---
+config:
+  theme: mc
+---
+sequenceDiagram
+    accTitle: Common ordered finish and subsequent format change
+    accDescr: END may arrive before or after FINAL_AUDIO, the receiver preserves the agreed final range, then a new format requires a newly admitted session.
+    participant T as Transport
+    participant R as DAC receiver
+    Note over T,R: Existing session, preserve preceding in-flight audio
+    alt END arrives first
+        T->>R: END with total_groups and matching nonce
+        R-->>T: END response accepts and echoes total_groups
+        T->>R: FINAL_AUDIO with 1 to G final groups
+    else FINAL_AUDIO arrives first
+        T->>R: FINAL_AUDIO with 1 to G final groups
+        R->>R: May finish playout, remain safely muted while awaiting END
+        T->>R: END with total_groups and matching nonce
+        R-->>T: END response accepts and echoes total_groups
+    end
+    R->>R: Verify the final packet range agrees with END
+    R->>R: Play remaining valid groups, mute and retire the old session
+    Note over T,R: END acknowledgement accepts the count, it does not confirm drain completion
+    T->>R: OPEN for the new format, with ID 0 and a fresh nonce
+    Note right of R: New OPEN acceptance waits for old-session retirement
+    R-->>T: On acceptance, return the new ID and complete context
+    T->>R: START for the new session
+    R->>R: Validate the selected clock arrangement
+    R-->>T: START acknowledgement and initial credit_state
+    T->>R: Audio with sequence 0, within granted credit
+    R->>R: Prefill, then play the new format

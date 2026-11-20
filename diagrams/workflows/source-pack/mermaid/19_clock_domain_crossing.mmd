@@ -1,0 +1,33 @@
+flowchart TD
+    accTitle: Validated frame commit and clock-domain crossing
+    accDescr: Complete received frames pass FCS and protocol checks before atomic commitment to a dual-clock FIFO. The conversion clock drives group retirement independently of packet arrival. Pointer synchronisation and reset constraints require engineering review.
+    subgraph receive["Receive domain: MAC or local transport clock"]
+        mac["Ethernet MAC"]
+        staging["Complete-frame staging buffer"]
+        checks{"FCS, syntax, length and session valid?"}
+        commit["Atomic commit of groups and coherent metadata"]
+        discard["Discard rejected frame and update counters"]
+        mac --> staging
+        staging --> checks
+        checks -->|"Yes"| commit
+        checks -->|"No"| discard
+    end
+    fifo["Dual-clock audio FIFO"]
+    pointers["Gray-coded pointer transfer through reviewed synchronisers"]
+    constraints["Metastability analysis, reset release and CDC timing constraints"]
+    subgraph playback["Playback domain: conversion clock"]
+        retire["Retire groups at the negotiated rate"]
+        output["Validated DAC output interface"]
+        retire --> output
+    end
+    clock["Qualified local conversion-clock subsystem"]
+    protect["Safe mute and session abort"]
+    commit --> fifo
+    fifo --> retire
+    pointers -.->|"Both pointer directions"| fifo
+    constraints -.-> pointers
+    constraints -.-> fifo
+    clock -.->|"Read timing"| retire
+    clock -.->|"Conversion timing"| output
+    retire -->|"Confirmed active-stream gap or underrun"| protect
+    clock -->|"Invalid conversion timing"| protect

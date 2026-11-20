@@ -1,0 +1,41 @@
+---
+config:
+  theme: mc
+---
+flowchart LR
+    accTitle: Common format and forward-link capacity admission
+    accDescr: Check endpoint capabilities, construct an aligned packet budget, compare it with 1.000 Gb/s MAC service and apply the selected admission policy.
+    Request["Proposed format, rate, channel count C and channel map"]
+    Capable{"Exact combination supported by both endpoints?"}
+    Reject["Reject this combination; negotiate a supported configuration"]
+    Rate["Group rate r = Fs for PCM; r = DSD bit rate / 32 for DSD"]
+    Group["Choose fixed G: 1 <= G <= floor(1440 / (4*C))"]
+    Assembly["Apply the selected packet assembly target; 125 us in the example budget"]
+    Payload["Audio payload P = 4*C*G bytes; P <= 1440"]
+    VLAN{"One optional VLAN tag?"}
+    Tagged["Tagged wire occupancy W = 42 + max(42, 12 + P) bytes"]
+    Untagged["Untagged wire occupancy W = 38 + max(46, 12 + P) bytes"]
+    Wire["Packet rate = r/G; wire demand = 8*W*r/G bit/s"]
+    Policy{"Total forward demand fits the selected 1G admission policy?"}
+    Resources{"Buffer, prefill, timing and clock arrangement supported?"}
+    Accept["OPEN may accept this immutable session context"]
+    Request --> Capable
+    Capable -- No --> Reject
+    Capable -- Yes --> Rate
+    Rate --> Group
+    Group --> Assembly
+    Assembly --> Payload
+    Payload --> VLAN
+    VLAN -- Yes --> Tagged
+    VLAN -- No --> Untagged
+    Tagged --> Wire
+    Untagged --> Wire
+    Wire --> Policy
+    Policy -- No --> Reject
+    Policy -- Yes --> Resources
+    Resources -- No --> Reject
+    Resources -- Yes --> Accept
+
+    style Request fill:#FFF3DA,stroke:#B8781C,color:#513B14
+    style Reject fill:#FCE8E6,stroke:#B3261E,color:#54201C
+    style Accept fill:#E3F2E7,stroke:#25834A,color:#163D25

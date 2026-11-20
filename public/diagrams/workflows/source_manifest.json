@@ -1,0 +1,14 @@
+{
+  "project": "o2at",
+  "diagram_edition": "2026-11-20",
+  "whitepaper": {
+    "filename": "O2AT_v0.2_Whitepaper.odt",
+    "document_revision_date": "2026-11-19",
+    "sha256": "df21b57cd1f6d6a188d9e5a78037f27d85f90614c6ad6d919b2ba213bd5b0a00",
+    "modified_by_this_task": false
+  },
+  "scope": "34 explanatory Mermaid diagrams; current v0.2 workflows plus explicitly proposed Type 1/Type 2 frequency-transfer and clock-hub options",
+  "new_wire_allocations": false,
+  "rendering_status": "Grammar checked. Final visual layout to be inspected in Mermaid Chart.",
+  "website_deployed_by_this_task": false
+}

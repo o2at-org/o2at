@@ -1,0 +1,31 @@
+---
+config:
+  theme: mc
+---
+sequenceDiagram
+    accTitle: Cumulative receiver credits and actual consumption
+    accDescr: A source sends only within an exclusive cumulative grant. The receiver reserves storage for in-flight data and advances consumption only as the audio side retires groups. Repeated or stale grants add no extra credit.
+    participant S as Source
+    participant R as Receiver and FIFO accounting
+    participant A as Audio-domain playout
+    S->>R: START for a new admitted session
+    R-->>S: ACK with grant_end_group and consumed_groups = 0
+    S->>S: Initialise sent_end_group = 0
+    Note over S,R: Send only when sent_end_group + packet_groups <= grant_end_group
+    Note over R,A: Retirement starts after agreed prefill or the complete-short-stream exception
+    loop While the session remains active
+        alt Next packet fits the current grant
+            S->>R: AUDIO for the next group range
+            S->>S: Advance sent_end_group for newly sent groups
+            R->>R: Validate the complete frame before FIFO commitment
+            R->>A: Supply buffered groups at local audio cadence
+            A-->>R: Actual retirement advances consumed_groups
+            R->>R: Honour reserved storage, including audio in flight
+            R-->>S: CREDIT with a non-decreasing cumulative grant
+        else Grant is exhausted
+            S->>S: Hold new AUDIO, retain only bounded upstream data
+        end
+        R-->>S: Repeat latest credit_state within the agreed interval
+        S->>S: Ignore older grants, repeated grants add no credit
+    end
+    Note over S,R: Grant values are exclusive cumulative limits, not per-message allowances

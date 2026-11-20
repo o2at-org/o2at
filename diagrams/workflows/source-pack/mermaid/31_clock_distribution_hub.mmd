@@ -1,0 +1,27 @@
+flowchart TD
+    accTitle: Proposed clock generator and optical reference hub
+    accDescr: A proposed device role offers separately engineered 50 ohm and 75 ohm BNC outputs plus a qualified optical reference service. It can discipline the selected source authority in Type 1 or DAC authority in Type 2 without defining a third architecture.
+    INTERNAL["Hub internal reference"]
+    EXTERNAL["Qualified external reference input"]
+    SELECT["Explicit source selection and reference qualification"]
+    CORE["Proposed clock generator and distribution core"]
+    OUT50["Separate 10 MHz / 50 Ω BNC driver with specified level"]
+    OUT75["Separate 10 MHz / 75 Ω BNC driver with specified level"]
+    OPTICAL["Qualified continuous optical reference transmitter with SFP termination"]
+    LOAD50["Compatible 50 Ω terminated reference input"]
+    LOAD75["Compatible 75 Ω terminated reference input"]
+    LOADOPT["Dedicated optical input at the selected Type 1 source or Type 2 DAC"]
+    INTERNAL --> SELECT
+    EXTERNAL --> SELECT
+    SELECT --> CORE
+    CORE --> OUT50
+    CORE --> OUT75
+    CORE --> OPTICAL
+    OUT50 -->|"Matched impedance class"| LOAD50
+    OUT75 -->|"Matched impedance class"| LOAD75
+    OPTICAL ==>|"Specified continuous reference, not packet arrival timing"| LOADOPT
+    BNC["BNC shields may add conductive paths between chassis"]
+    BNC -.-> OUT50
+    BNC -.-> OUT75
+    PROPOSAL["New device role and undefined optical service, not Type 3 or current v0.2 conformance"]
+    PROPOSAL -.-> CORE

@@ -40,7 +40,7 @@ const origin = `http://127.0.0.1:${address.port}`;
 const executablePath = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await puppeteer.launch({ headless: true, executablePath, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 const routes = [
-  '/', '/how-it-works/', '/clocking/', '/specification/', '/specification/full/', '/explore/', '/build-and-test/',
+  '/', '/how-it-works/', '/clocking/', '/specification/', '/specification/full/', '/explore/', '/build-and-test/', '/workflows/',
   '/contribute/', '/about/', '/journal/', '/journal/why-o2at/', '/journal/whose-clock/', '/journal/why-1g-sfp/', '/privacy/', '/terms/',
 ];
 const errors = [];
@@ -53,6 +53,7 @@ try {
       page.on('pageerror', error => errors.push(`${route} @ ${width}px: ${error.message}`));
       await page.goto(`${origin}${route}`, { waitUntil: 'load' });
       await page.evaluate(() => document.fonts.ready);
+      if (route === '/workflows/') await page.evaluate(() => document.querySelectorAll('details.workflow-item').forEach(item => { item.open = true; }));
       await page.evaluate(() => document.querySelectorAll('img[loading="lazy"]').forEach(image => image.loading = 'eager'));
       await new Promise(resolveWait => setTimeout(resolveWait, 60));
       const state = await page.evaluate(() => ({
@@ -72,7 +73,7 @@ try {
 
   const page = await browser.newPage();
   await page.setViewport({ width: 1440, height: 1000 });
-  for (const route of ['/', '/how-it-works/', '/clocking/', '/specification/', '/specification/full/', '/explore/', '/build-and-test/', '/contribute/', '/about/']) {
+  for (const route of ['/', '/how-it-works/', '/clocking/', '/specification/', '/specification/full/', '/explore/', '/build-and-test/', '/workflows/', '/contribute/', '/about/']) {
     await page.goto(`${origin}${route}`, { waitUntil: 'load' });
     await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
     const audit = await page.evaluate(async () => window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } }));
@@ -93,13 +94,24 @@ try {
 
   await page.setJavaScriptEnabled(false);
   await page.goto(`${origin}/`, { waitUntil: 'load' });
-  const noJsNavigationVisible = await page.evaluate(() => getComputedStyle(document.querySelector('#primary-nav')).display !== 'none' && document.querySelectorAll('#primary-nav a').length >= 5);
+  const noJsNavigationVisible = await page.evaluate(() => getComputedStyle(document.querySelector('#primary-nav')).display !== 'none' && document.querySelectorAll('#primary-nav a').length >= 6);
   if (!noJsNavigationVisible) errors.push('No-JavaScript mode: primary navigation is unavailable.');
   await page.setJavaScriptEnabled(true);
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   await page.goto(`${origin}/`, { waitUntil: 'load' });
   const reducedMotion = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior === 'auto');
   if (!reducedMotion) errors.push('Reduced-motion preference is not respected by page scrolling.');
+
+  await page.goto(`${origin}/workflows/`, { waitUntil: 'load' });
+  const workflowPage = await page.evaluate(async () => {
+    const items = [...document.querySelectorAll('details.workflow-item')];
+    items.forEach(item => { item.open = true; });
+    const images = [...document.querySelectorAll('.workflow-image-scroll img')];
+    images.forEach(image => { image.loading = 'eager'; });
+    await Promise.all(images.map(image => image.decode().catch(() => undefined)));
+    return { items: items.length, images: images.length, broken: images.filter(image => !image.complete || image.naturalWidth === 0).length, sources: document.querySelectorAll('a[download][href$=".mmd"]').length };
+  });
+  if (workflowPage.items !== 34 || workflowPage.images !== 34 || workflowPage.broken || workflowPage.sources !== 34) errors.push(`Workflow gallery: expected 34 rendered, sourced diagrams; got ${JSON.stringify(workflowPage)}.`);
 
   await page.goto(`${origin}/explore/`, { waitUntil: 'load' });
   const initialRate = await page.$eval('#wire-rate', node => node.textContent.trim());
@@ -118,7 +130,7 @@ try {
   server.close();
 }
 
-console.log(`Browser checks: ${results.length} route/viewport renders; nine axe route audits; keyboard nav and calculator interaction checks.`);
+console.log(`Browser checks: ${results.length} route/viewport renders; ten axe route audits; 34 workflow SVG/source checks; keyboard nav and calculator interaction checks.`);
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exitCode = 1;

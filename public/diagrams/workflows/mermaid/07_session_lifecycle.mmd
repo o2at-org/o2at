@@ -1,0 +1,32 @@
+---
+config:
+  theme: mc
+---
+stateDiagram-v2
+    accTitle: Common admitted-session lifecycle
+    accDescr: An admitted context moves through preparation, prefill, playback and ordered draining; protection retires the session under safe mute.
+    [*] --> IDLE
+    IDLE --> OPEN: OPEN accepted with a fresh session binding
+    OPEN --> OPEN: Clock acquisition or PING
+    OPEN --> ARMED: START acknowledged with valid clock and initial credit
+    ARMED --> RUNNING: Prefill complete or complete short-stream exception
+    RUNNING --> RUNNING: Valid audio, CREDIT, PING or STATUS
+    RUNNING --> DRAINING: Ordered final range is being retired
+    DRAINING --> IDLE: Final range played and END agrees
+    ARMED --> IDLE: END confirms an empty stream
+    OPEN --> IDLE: ABORT, inactivity expiry, link loss or reset
+    ARMED --> IDLE: ABORT, inactivity expiry or protection fault
+    RUNNING --> IDLE: ABORT or protection fault
+    DRAINING --> IDLE: ABORT or protection fault
+    note right of ARMED
+        Prefill starts only after START acknowledgement.
+        END receipt does not discard in-flight audio.
+    end note
+    note right of DRAINING
+        A played FINAL_AUDIO awaits missing END under mute.
+        This drained FIFO is not an underrun.
+    end note
+    note left of IDLE
+        Retire the old binding and retain reply caches.
+        A restart requires a new nonce and session ID.
+    end note

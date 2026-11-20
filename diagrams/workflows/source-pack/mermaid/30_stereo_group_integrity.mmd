@@ -1,0 +1,16 @@
+flowchart TD
+    accTitle: Keep left and right together through the optical transport
+    accDescr: Left and right samples occupy the same indexed audio group in a framed stream. After whole-frame validation and buffering, both are released under a common audio clock. Separate internal channel lanes do not require separate optical data links.
+    LEFT["Left sample or DSD block"] --> GROUP["One indexed stereo group"]
+    RIGHT["Right sample or DSD block"] --> GROUP
+    GROUP --> PACKET["Packet contains complete groups in channel-map order"]
+    PACKET --> LINK["One forward optical data stream"]
+    LINK --> VALID{"Complete frame and session valid?"}
+    VALID -->|"No"| FAULT["Discard and count; confirmed active-stream gaps retain their deadline"]
+    VALID -->|"Yes"| FIFO["Store complete groups in the audio FIFO"]
+    FIFO --> RELEASE["Release the next complete group"]
+    CLOCK["Common DAC audio clock"] -. "Read cadence" .-> RELEASE
+    RELEASE --> LOUT["Left converter lane"]
+    RELEASE --> ROUT["Right converter lane"]
+    CLOCK -. "Conversion timing" .-> LOUT
+    CLOCK -. "Conversion timing" .-> ROUT

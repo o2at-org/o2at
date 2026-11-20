@@ -1,0 +1,27 @@
+flowchart TD
+    accTitle: Proposed prototype validation workflow
+    accDescr: This editorial workflow organises the draft validation programme. It is not a normative protocol message sequence and does not claim that a working prototype or completed measurements already exist.
+    proposal["Editorial workflow recommendation: prototype validation"]
+    scope["Freeze draft version, test scope and acceptance criteria"]
+    vectors["Publish exact PCM, DSD and protocol test vectors"]
+    simulation["Exercise control, credits and fault handling in simulation"]
+    implementation["Implement a native generator and receiver path"]
+    link["Qualify optics, temperature, loss and sustained traffic"]
+    clock["Measure both clock families, FIFO behaviour and conversion timing"]
+    fault["Inject corruption, gaps, stale frames and reference loss"]
+    interop["Test independent sources and receivers"]
+    review{"Evidence meets the declared acceptance criteria?"}
+    repair["Record defects and rerun affected tests after correction"]
+    publish["Publish reproducible builds, traces, results and limits"]
+    proposal --> scope
+    scope --> vectors
+    vectors --> simulation
+    simulation --> implementation
+    implementation --> link
+    link --> clock
+    clock --> fault
+    fault --> interop
+    interop --> review
+    review -->|"No"| repair
+    repair --> simulation
+    review -->|"Yes"| publish

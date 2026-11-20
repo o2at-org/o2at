@@ -1,0 +1,29 @@
+flowchart TD
+    accTitle: Conceptual receiver power and RF partitioning
+    accDescr: The optical cage and digital circuitry need controlled power and thermal behaviour alongside the clock and analogue circuits. This is a conceptual partition, not a grounding schematic. Reference-clock coax may reconnect chassis electrically.
+    fibre["Duplex glass fibre: non-conductive audio link"]
+    external["External 10 MHz reference, when selected"]
+    subgraph chassis["Receiver chassis: conceptual placement and power plan"]
+        supply["Supply entry and regulation plan"]
+        digital["Local digital regulation and filtering"]
+        sensitive["Clock and analogue regulation and filtering"]
+        optical["Qualified SFP cage and serial PHY"]
+        logic["MAC, frame validation and audio FIFO"]
+        clock["Conversion-clock subsystem"]
+        analogue["DAC reference and analogue output"]
+        supply -->|"Power"| digital
+        supply -->|"Power"| sensitive
+        digital -->|"Power"| optical
+        digital -->|"Power"| logic
+        sensitive -->|"Power"| clock
+        sensitive -->|"Power"| analogue
+        optical -->|"Audio data"| logic
+        logic -->|"Buffered groups"| analogue
+        clock -.->|"Conversion timing"| analogue
+    end
+    review["Review return currents, cage bonding, thermal paths and channel losses"]
+    measurement["Measure rail spectra and analogue output across traffic and temperature"]
+    fibre --> optical
+    external -.->|"Coax may create a conductive chassis path"| clock
+    review -.-> chassis
+    measurement -.-> chassis

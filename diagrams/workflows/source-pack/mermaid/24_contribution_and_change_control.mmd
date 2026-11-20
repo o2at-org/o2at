@@ -1,0 +1,31 @@
+flowchart TD
+    accTitle: Proposed contribution and change-control workflow
+    accDescr: This editorial governance recommendation records evidence, compatibility review and public decisions. It is not a normative wire-protocol sequence or a claim that a governing organisation or adopted licence policy already exists.
+    proposal["Editorial workflow recommendation: contribution review"]
+    submission["Submit version, section, evidence and proposed change"]
+    triage["Check scope, duplication and reproducibility"]
+    impact{"Normative behaviour or capability affected?"}
+    editorial["Trace editorial corrections to the source"]
+    compatibility["Assess wire version, negotiation and compatibility"]
+    review["Public engineering review with relevant test evidence"]
+    licences["Check proposed licences and third-party obligations"]
+    decision{"Accept the change?"}
+    revise["Record rationale and request missing evidence"]
+    update["Update specification, registry and conformance vectors as affected"]
+    publish["Publish versioned changes and errata with the decision"]
+    retain["Retain previous releases and public decision history"]
+    proposal --> submission
+    submission --> triage
+    triage --> impact
+    impact -->|"No"| editorial
+    impact -->|"Yes"| compatibility
+    editorial --> review
+    compatibility --> review
+    review --> licences
+    licences --> decision
+    decision -->|"Yes"| update
+    decision -->|"Further evidence needed"| revise
+    revise --> review
+    decision -->|"Reject with public rationale"| retain
+    update --> publish
+    publish --> retain

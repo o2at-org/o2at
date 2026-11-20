@@ -4,7 +4,7 @@ Static Astro publication for the Open Optical Audio Transport engineering propos
 
 ## Source and status
 
-The published specification is generated from the bundled `O2AT_Launch/reference/O2AT_v0.2_Whitepaper.odt`. Its SHA-256 is `df21b57cd1f6d6a188d9e5a78037f27d85f90614c6ad6d919b2ba213bd5b0a00`. The matching supplied PDF is retained as-is in `public/downloads`. The site's version (`0.1.0`) is separate from O2AT's proposed wire-version nibble (`0x2`).
+The published specification is generated from the bundled `O2AT_Launch/reference/O2AT_v0.2_Whitepaper.odt`. Its SHA-256 is `df21b57cd1f6d6a188d9e5a78037f27d85f90614c6ad6d919b2ba213bd5b0a00`. The matching supplied PDF is retained as-is in `public/downloads`. The site's version (`0.1.1`) is separate from O2AT's proposed wire-version nibble (`0x2`).
 
 O2AT v0.2 is an engineering draft for review. This repository contains the website, a generated HTML rendering and illustrative tools. It does not claim a hardware prototype, measured clock performance, independent conformance result, certification or manufacturer endorsement.
 
@@ -33,7 +33,7 @@ Journal articles are editorial explanations and do not add requirements. The sma
 
 ## Diagrams and numerical tools
 
-Editable Mermaid sources are in `diagrams/`. Render their portable SVG review copies with `npm run render:diagrams` (Mermaid CLI 12.2.0; set `PUPPETEER_EXECUTABLE_PATH` to an installed Chromium/Chrome executable if needed). The site uses hand-drawn, accessible SVG components in `src/components/` because they add the optical-isolation boundary and explanatory labels more clearly. Diagram labels and signals are checked against the v0.2 ODT. The bandwidth formulas and clock/FIFO model are isolated in `src/client/` and have numerical unit tests. Explore-page labels identify analytical and illustrative output.
+Editable Mermaid sources are in `diagrams/`; the supplied workflow pack is preserved byte-for-byte under `diagrams/workflows/source-pack/`. The 34 workflow diagrams are rendered locally as SVG and published in a review gallery at `/workflows/`, with source downloads, section links and clear current/proposed status labels. Desktop diagrams use wide landscape canvases; smaller screens can scroll within each labelled diagram region. Use `npm run render:diagrams` and `npm run render:workflows` to regenerate the SVGs. Mermaid is not loaded from a third-party service, and SVGs use no embedded font. Diagram labels and signals are reviewed against the v0.2 ODT. The bandwidth formulas and clock/FIFO model are isolated in `src/client/` and have numerical unit tests. Explore-page labels identify analytical and illustrative output.
 
 Regenerate the social preview with `npm run render:social` on macOS. The script embeds paths from the supplied approved logo master and rasterises the card to PNG with the built-in `sips` utility.
 
