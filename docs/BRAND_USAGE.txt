@@ -1,0 +1,70 @@
+O2AT / outlined logo masters
+Version 1.0, 20 November 2026
+
+APPROVED ROLES
+
+Use the superscript O²AT mark for the website and the baseline O2AT mark for device identification. The baseline numeral has more visual weight at small sizes. Both marks preserve the shapes, relative positions and spacing of the approved two-row proof.
+
+The logo lettering is outlined artwork. No font installation is required. All SVG and PDF masters contain closed, filled contours; the O and A counters remain transparent. The logos have no strokes, embedded raster images or live text.
+
+FILE INVENTORY
+
+svg/o2at_superscript_black.svg
+svg/o2at_superscript_white.svg
+svg/o2at_superscript_currentcolor.svg
+svg/o2at_baseline_black.svg
+svg/o2at_baseline_white.svg
+svg/o2at_baseline_currentcolor.svg
+
+These are the scalable masters for websites and general artwork exchange. Black, white and currentColor versions share identical geometry within each mark.
+
+pdf/o2at_superscript_black.pdf
+pdf/o2at_superscript_white.pdf
+pdf/o2at_baseline_black.pdf
+pdf/o2at_baseline_white.pdf
+
+These are vector-only logo masters for artwork exchange. Page dimensions are presentation dimensions, not specified manufacturing dimensions. White PDFs contain white paths on a transparent page and therefore appear blank against a white viewer background. The proof sheet shows their intended appearance on a dark surface.
+
+png/o2at_superscript_black_2048.png
+png/o2at_superscript_white_2048.png
+png/o2at_baseline_black_2048.png
+png/o2at_baseline_white_2048.png
+
+These are transparent, 2048-pixel-wide previews rasterised from the vector masters. Use the SVG or PDF masters wherever vector artwork is accepted.
+
+proofs/o2at_logo_proof.pdf
+proofs/o2at_logo_proof.png
+proofs/o2at_small_size_checks.png
+
+The proof sheet compares both approved marks in black and reversed white. The screen-size sheet shows 256, 128, 96 and 64 pixel widths. These are visual checks, not minimum-size recommendations or manufacturing specifications.
+
+BRAND_USAGE.txt
+SHA256SUMS.txt
+
+SHA256SUMS.txt records the SHA-256 checksum of every deliverable other than the checksum file itself. The source/ and qa/ directories, if present in a working folder, are production intermediates and are not part of the asset package.
+
+SPACING AND REPRODUCTION
+
+Each SVG viewBox includes approximately 20 original-proof pixel units of transparent padding around the traced mark. Retain at least this supplied padding and allow more space beside other labels, controls or page elements where practical. This is layout guidance, not a process-dependent manufacturing clearance.
+
+Scale the entire mark uniformly. Preserve the numeral position, letter spacing, counters and aspect ratio. Use a solid black mark on a light surface or a solid white mark on a dark surface. Do not add outlines, distort the letters, or independently resize the numeral.
+
+The superscript viewBox is 1039 by 375 units. The baseline viewBox is 1169 by 330 units. These units are relative coordinates and do not impose a physical size.
+
+WEBSITE USE
+
+The fixed black and white SVG files can be used directly as image sources. Provide an accessible name such as "O2AT, Open Optical Audio Transport" where the logo identifies the organisation or project.
+
+The currentColor SVG files inherit the CSS colour when their SVG markup is inserted inline into a page. Set the CSS color property on the SVG or its containing element. Loading a currentColor SVG through an HTML img element does not make it inherit the enclosing page's CSS colour.
+
+If the same inline SVG appears several times on a page, give each instance unique IDs and update its aria-labelledby references. For a decorative duplicate beside equivalent text, hide that instance from assistive technology. The supplied title and description provide an initial accessible label for a standalone instance.
+
+FABRICATION HANDOFF
+
+Provide the baseline SVG or vector PDF to the fabricator and specify the required finished size, substrate, finish, contrast and marking process. Filled contours express the intended visible artwork; they are not a laser toolpath or a kerf-compensated cutting file.
+
+Etching, engraving and printing can reproduce counters and narrow gaps differently. Ask the fabricator to inspect the artwork and qualify a sample on the intended material at the intended size. Check the O and A counters, numeral shape, edge quality and adjacent spacing on that sample. No fabrication process, physical minimum size or minimum line width has been qualified by this package.
+
+PRODUCTION NOTE
+
+The masters were traced from the approved raster proof rather than recreated with a substitute typeface. Tracing removes raster texture and antialiasing and introduces minor contour smoothing. There are no intentional changes to the approved letter shapes or spacing. At the original proof scale, thresholded silhouette overlap is approximately 99.67% for the superscript mark and 99.66% for the baseline mark.

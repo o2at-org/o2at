@@ -1,0 +1,20 @@
+{
+  "protocol": "O2AT",
+  "wireVersion": "0x2",
+  "technicalDocument": "O2AT v0.2 engineering draft",
+  "status": "For manufacturer and community review; not a ratified standard",
+  "sourceKind": "bundled editable ODT, selected because no newer matching O2AT master was found in the supplied workspace",
+  "sourcePath": "O2AT_Launch/reference/O2AT_v0.2_Whitepaper.odt",
+  "sourceSha256": "df21b57cd1f6d6a188d9e5a78037f27d85f90614c6ad6d919b2ba213bd5b0a00",
+  "sourceBytes": 65173,
+  "matchingPdfPath": "O2AT_Launch/reference/O2AT_v0.2_Whitepaper.pdf",
+  "matchingPdfSha256": "efc5e00a4056c18f25fd37768e48a83ad20cdf207f9a97081e93e6e89e28f989",
+  "matchingPdfPages": 45,
+  "websiteRelease": "0.1.0",
+  "webEditionGeneratedFrom": "spec/source/O2AT_v0.2_Whitepaper.odt",
+  "limitations": [
+    "The web edition is a semantic HTML rendering of the bundled ODT content. The supplied matching PDF remains the page-layout reference.",
+    "The separate Downloads and Documents/O2AT PDF files have hash c697aca69852b732f2ba92a94065fe99ede65d6509ef3424605196af3c83b190 and are not published because they differ editorially from the bundled source and proof."
+  ],
+  "sourceFilesChecksumManifest": "spec/source/FILES.sha256"
+}

@@ -1,0 +1,12 @@
+stateDiagram-v2
+  [*] --> OPEN
+  OPEN --> CLOCK_VALID: acquire local / disciplined timing
+  CLOCK_VALID --> START: timing and required relationship valid
+  START --> PREFILL: grant and data accepted
+  PREFILL --> RUNNING: safe occupancy reached
+  RUNNING --> HOLDOVER: reference lost, holdover valid
+  HOLDOVER --> RUNNING: reference restored within bounds
+  RUNNING --> MUTE_ABORT: invalid timing, exhausted holdover, or playout gap
+  HOLDOVER --> MUTE_ABORT: safe bound expires
+  MUTE_ABORT --> RECOVERY: local protection, fresh session required
+  RECOVERY --> OPEN: session reopened

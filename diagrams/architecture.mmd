@@ -1,0 +1,19 @@
+flowchart LR
+  SRC[Audio source<br/>PCM / DSD] --> TX[Source SFP + MAC]
+  subgraph OPTICAL[Full-duplex optical link · galvanic isolation at the link boundary]
+    direction LR
+    TX -->|Fibre A · audio frames| RX[Receiver SFP + MAC]
+    RX -->|Fibre B · cumulative receiver credits| TX
+  end
+  RX -->|Accepted packet groups| FIFO[Dual-clock FIFO<br/>transport write · audio read]
+  FIFO --> DAC[DAC conversion]
+  REF[Local oscillator<br/>or 10 MHz discipline] --> CLK[Receiver audio clock]
+  CLK -->|FIFO read cadence| FIFO
+  CLK -->|Conversion timing| DAC
+  EXTRA[Optional coax / chassis path] -. may conduct .-> DAC
+  classDef audio fill:#e9f2f1,stroke:#087b83,color:#14272d
+  classDef feedback fill:#fbf1e7,stroke:#bd6a27,color:#14272d
+  classDef clock fill:#f0eff7,stroke:#4555a0,color:#14272d
+  class SRC,TX,RX,FIFO,DAC audio
+  class REF,CLK clock
+  class EXTRA feedback

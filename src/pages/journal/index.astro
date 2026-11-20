@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Journal" description="Engineering notes on O2AT's open optical audio proposal, receiver clock ownership and the 1G SFP baseline.">
+  <div class="wrap page-intro"><p class="eyebrow">Journal</p><h1>Engineering notes from the proposal.</h1><p class="lead">These introductory articles explain the design questions behind v0.2. They are project-authored commentary, not additional protocol requirements.</p></div>
+  <section class="section"><div class="wrap article-list">
+    <article class="article"><p class="article-meta">ENGINEERING NOTE</p><h2><a href="/journal/why-o2at/">Why propose another optical audio transport?</a></h2><p>O2AT starts with a familiar connection problem and asks a narrower question: can a standard, open Layer 2 link carry a well-defined audio stream without making packet arrival the DAC’s conversion clock?</p></article>
+    <article class="article"><p class="article-meta">CLOCKING</p><h2><a href="/journal/whose-clock/">Whose clock controls playback?</a></h2><p>A receiver can separate packet timing from conversion cadence, but the buffer and source relationship must be engineered as a complete system.</p></article>
+    <article class="article"><p class="article-meta">CAPACITY</p><h2><a href="/journal/why-1g-sfp/">Why the baseline is 1G SFP.</a></h2><p>The base profile is chosen for a stereo successor use case. Higher channel counts are admitted by calculation rather than by an unqualified maximum-rate claim.</p></article>
+  </div></section>
+  <section class="section section-top"><div class="wrap split"><div><p class="eyebrow">Publication feed</p><h2>Follow the journal.</h2></div><div class="prose"><p>The site publishes a public RSS feed. No subscription form or email collection is provided.</p><p><a class="button secondary" href="/rss.xml">Subscribe with RSS</a></p></div></div></section>
+</BaseLayout>

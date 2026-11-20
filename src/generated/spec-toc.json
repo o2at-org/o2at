@@ -1,0 +1,247 @@
+[
+  {
+    "title": "1. Executive Summary & Problem Statement",
+    "id": "1-executive-summary-problem-statement",
+    "level": 1
+  },
+  {
+    "title": "1.1 What changes in v0.2",
+    "id": "1-1-what-changes-in-v0-2",
+    "level": 2
+  },
+  {
+    "title": "1.2 Scope, terminology and conformance",
+    "id": "1-2-scope-terminology-and-conformance",
+    "level": 2
+  },
+  {
+    "title": "2. History of TOSLINK and Legacy Optical Audio Interfaces",
+    "id": "2-history-of-toslink-and-legacy-optical-audio-interfaces",
+    "level": 1
+  },
+  {
+    "title": "2.1 Physical limits, line coding and the installed base",
+    "id": "2-1-physical-limits-line-coding-and-the-installed-base",
+    "level": 2
+  },
+  {
+    "title": "2.2 Comparative limitations of legacy interfaces",
+    "id": "2-2-comparative-limitations-of-legacy-interfaces",
+    "level": 2
+  },
+  {
+    "title": "3. Landscape Analysis: AoIP and Proprietary Optical Links",
+    "id": "3-landscape-analysis-aoip-and-proprietary-optical-links",
+    "level": 1
+  },
+  {
+    "title": "3.1 Professional transports solve a broader problem",
+    "id": "3-1-professional-transports-solve-a-broader-problem",
+    "level": 2
+  },
+  {
+    "title": "3.2 HiFi Rose: optical USB and optical Ethernet are different",
+    "id": "3-2-hifi-rose-optical-usb-and-optical-ethernet-are-different",
+    "level": 2
+  },
+  {
+    "title": "3.3 MSB Pro ISL and Aurender N50: the relevant lesson",
+    "id": "3-3-msb-pro-isl-and-aurender-n50-the-relevant-lesson",
+    "level": 2
+  },
+  {
+    "title": "3.4 Comparative landscape",
+    "id": "3-4-comparative-landscape",
+    "level": 2
+  },
+  {
+    "title": "4. O2AT Design Objectives & Architectural Principles",
+    "id": "4-o2at-design-objectives-architectural-principles",
+    "level": 1
+  },
+  {
+    "title": "4.1 Three implementable profiles",
+    "id": "4-1-three-implementable-profiles",
+    "level": 2
+  },
+  {
+    "title": "4.2 Isolation, openness and a stable channel model",
+    "id": "4-2-isolation-openness-and-a-stable-channel-model",
+    "level": 2
+  },
+  {
+    "title": "4.3 Replacing TOSLINK variants and allowing future ADAT",
+    "id": "4-3-replacing-toslink-variants-and-allowing-future-adat",
+    "level": 2
+  },
+  {
+    "title": "5. Physical Layer & Wire Protocol Specification",
+    "id": "5-physical-layer-wire-protocol-specification",
+    "level": 1
+  },
+  {
+    "title": "5.1 Mandatory 1G optical baseline",
+    "id": "5-1-mandatory-1g-optical-baseline",
+    "level": 2
+  },
+  {
+    "title": "5.2 Revised SFP and SFP+ engineering assessment",
+    "id": "5-2-revised-sfp-and-sfp-engineering-assessment",
+    "level": 2
+  },
+  {
+    "title": "5.3 Ethernet envelope and identification",
+    "id": "5-3-ethernet-envelope-and-identification",
+    "level": 2
+  },
+  {
+    "title": "5.4 Fixed 12-byte common header",
+    "id": "5-4-fixed-12-byte-common-header",
+    "level": 2
+  },
+  {
+    "title": "5.5 Control body, capabilities and session configuration",
+    "id": "5-5-control-body-capabilities-and-session-configuration",
+    "level": 2
+  },
+  {
+    "title": "5.6 State machine and receiver credits",
+    "id": "5-6-state-machine-and-receiver-credits",
+    "level": 2
+  },
+  {
+    "title": "5.7 PCM and native DSD packing",
+    "id": "5-7-pcm-and-native-dsd-packing",
+    "level": 2
+  },
+  {
+    "title": "5.8 Packetisation and exact occupied-wire budget",
+    "id": "5-8-packetisation-and-exact-occupied-wire-budget",
+    "level": 2
+  },
+  {
+    "title": "5.9 High-rate capacity and admission",
+    "id": "5-9-high-rate-capacity-and-admission",
+    "level": 2
+  },
+  {
+    "title": "5.10 Earlier high-resolution formats and useful scaling",
+    "id": "5-10-earlier-high-resolution-formats-and-useful-scaling",
+    "level": 2
+  },
+  {
+    "title": "6. Clocking Architecture, 10 MHz Discipline & Flow Control",
+    "id": "6-clocking-architecture-10-mhz-discipline-flow-control",
+    "level": 1
+  },
+  {
+    "title": "6.1 Separate serial recovery from conversion timing",
+    "id": "6-1-separate-serial-recovery-from-conversion-timing",
+    "level": 2
+  },
+  {
+    "title": "6.2 Why the reference tier includes a 10 MHz input",
+    "id": "6-2-why-the-reference-tier-includes-a-10-mhz-input",
+    "level": 2
+  },
+  {
+    "title": "6.3 Clock-input and synthesiser engineering",
+    "id": "6-3-clock-input-and-synthesiser-engineering",
+    "level": 2
+  },
+  {
+    "title": "6.4 Three rate-control cases",
+    "id": "6-4-three-rate-control-cases",
+    "level": 2
+  },
+  {
+    "title": "6.5 Buffer sizing, latency and loss behaviour",
+    "id": "6-5-buffer-sizing-latency-and-loss-behaviour",
+    "level": 2
+  },
+  {
+    "title": "6.6 Exact clock ratios and acceptance measurements",
+    "id": "6-6-exact-clock-ratios-and-acceptance-measurements",
+    "level": 2
+  },
+  {
+    "title": "7. Technical Challenges & Reference Implementation",
+    "id": "7-technical-challenges-reference-implementation",
+    "level": 1
+  },
+  {
+    "title": "7.1 Power, RF coupling and clock-domain crossings",
+    "id": "7-1-power-rf-coupling-and-clock-domain-crossings",
+    "level": 2
+  },
+  {
+    "title": "7.2 FPGA and host reference design",
+    "id": "7-2-fpga-and-host-reference-design",
+    "level": 2
+  },
+  {
+    "title": "7.3 USB ingress and DAC egress impose separate ceilings",
+    "id": "7-3-usb-ingress-and-dac-egress-impose-separate-ceilings",
+    "level": 2
+  },
+  {
+    "title": "7.4 Applying the architecture to the N30SA, µDDC and Harmony",
+    "id": "7-4-applying-the-architecture-to-the-n30sa-ddc-and-harmony",
+    "level": 2
+  },
+  {
+    "title": "8. Device Labelling, Diagnostics & User Experience",
+    "id": "8-device-labelling-diagnostics-user-experience",
+    "level": 1
+  },
+  {
+    "title": "9. Industry Adoption, Validation & Governance",
+    "id": "9-industry-adoption-validation-governance",
+    "level": 1
+  },
+  {
+    "title": "9.1 Why adoption will be gradual",
+    "id": "9-1-why-adoption-will-be-gradual",
+    "level": 2
+  },
+  {
+    "title": "9.2 A measurable validation programme",
+    "id": "9-2-a-measurable-validation-programme",
+    "level": 2
+  },
+  {
+    "title": "9.3 Release gates and future extensions",
+    "id": "9-3-release-gates-and-future-extensions",
+    "level": 2
+  },
+  {
+    "title": "9.4 Engineering review status and evidence required",
+    "id": "9-4-engineering-review-status-and-evidence-required",
+    "level": 2
+  },
+  {
+    "title": "Appendix A. Commercial Pushback from the Audiophile Cable Industry",
+    "id": "appendix-a-commercial-pushback-from-the-audiophile-cable-industry",
+    "level": 1
+  },
+  {
+    "title": "A.1 What commodity fibre changes physically",
+    "id": "a-1-what-commodity-fibre-changes-physically",
+    "level": 2
+  },
+  {
+    "title": "A.2 Likely incentives, not an allegation of coordinated resistance",
+    "id": "a-2-likely-incentives-not-an-allegation-of-coordinated-resistance",
+    "level": 2
+  },
+  {
+    "title": "Appendix B. Glossary of Acronyms and Engineering Terms",
+    "id": "appendix-b-glossary-of-acronyms-and-engineering-terms",
+    "level": 1
+  },
+  {
+    "title": "Bibliography and primary references",
+    "id": "bibliography-and-primary-references",
+    "level": 1
+  }
+]

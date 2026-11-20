@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import body from '../../generated/spec-body.html?raw';
+import toc from '../../generated/spec-toc.json';
+const sections = (toc as Array<{ title: string; id: string; level: number }>).filter(x => x.level <= 2);
+---
+<BaseLayout title="Complete HTML edition · O2AT v0.2" description="Complete semantic HTML reading edition of the O2AT v0.2 engineering draft, generated from the bundled ODT with tables, footnotes and references.">
+  <div class="wrap page-intro"><p class="eyebrow">Complete source rendering · 19 November 2026</p><h1>O2AT v0.2 engineering draft.</h1><p class="lead">This semantic HTML edition is generated from the bundled editable ODT. It retains source text, all physical tables, 28 footnotes, linked references and the embedded architecture SVG. Pagination and page styling follow the matching PDF.</p><p><a href="/specification/">← Specification overview</a> · <a href="/downloads/O2AT_v0.2_Whitepaper.pdf" download>Download the matching PDF</a> · <a href="/downloads/O2AT_v0.2_Whitepaper.odt" download>Download the editable ODT</a></p></div>
+  <section class="section section-top"><div class="wrap"><details class="toc-panel"><summary>Contents · {sections.length} section anchors</summary><nav aria-label="Specification contents"><ol>{sections.map(s => <li class:list={[`level-${s.level}`]}><a href={`#${s.id}`}>{s.title}</a></li>)}</ol></nav></details></div></section>
+  <article class="wrap spec-document prose" set:html={body} />
+  <section class="section section-top"><div class="wrap"><p class="status-note">Source note: this is an HTML rendering, not a replacement for the editable source layout. Table captions, footnote references and heading anchors are preserved for reading and review. When line breaks or pagination matter, cite the corresponding matching PDF page.</p><p><a class="button secondary" href="/specification/">Return to specification status and downloads</a></p></div></section>
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Explore the engineering model" description="Calculate O2AT v0.2 occupied Ethernet wire rate and explore an illustrative receiver clock, FIFO and credit model.">
+  <div class="wrap page-intro"><p class="eyebrow">Explore · analytical tools</p><h1>Change the inputs. See the budget move.</h1><p class="lead">The bandwidth calculator applies v0.2 packetisation and Ethernet overhead. The FIFO lab illustrates finite-buffer behaviour and cumulative credit semantics. Neither tool represents measured O2AT hardware.</p></div>
+  <section class="section" id="bandwidth"><div class="wrap"><p class="eyebrow">01 · Occupied wire rate</p><h2>Bandwidth calculator</h2><p class="lead">PCM uses sample groups per second. DSD uses 32-bit groups per channel. Rates are exact integer hertz in the calculation; rounding happens only for display.</p>
+    <form id="bandwidth-form" class="lab-grid" aria-describedby="bandwidth-qualifier">
+      <div class="panel">
+        <div class="field"><label for="format">Audio representation</label><select id="format"><option value="pcm">PCM32 container</option><option value="dsd">Native packed DSD</option></select></div>
+        <div class="field"><label for="rate">Per-channel rate (Hz)</label><input id="rate" type="number" min="1" max="9007199254740991" step="1" value="48000" inputmode="numeric" required><small>Examples: PCM 48,000 or 3,072,000; DSD 90,316,800 bits/s.</small></div>
+        <div class="field-row"><div class="field"><label for="channels">Channels</label><input id="channels" type="number" min="2" max="32" step="1" value="2" required></div><div class="field"><label for="link">MAC service</label><select id="link"><option value="1">1G · 1.000 Gb/s</option><option value="10">10G · 10.000 Gb/s</option></select></div></div>
+        <div class="field-row"><div class="field"><label for="target">Packet target (µs)</label><input id="target" type="number" min="1" max="1000000" step="1" value="125"></div><div class="field"><label for="admission">Admission ceiling</label><select id="admission"><option value="85">85%</option><option value="80">80%</option></select></div></div>
+        <div class="field"><label><input id="vlan" type="checkbox" checked> Include one VLAN tag</label></div>
+      </div>
+      <div class="panel" aria-live="polite" aria-atomic="true">
+        <p id="result-summary" class="help"></p><p class="eyebrow">Forward audio stream</p><div id="wire-rate" class="result-primary">—</div><p id="wire-util" class="result-label">—</p>
+        <meter id="meter" class="meter" min="0" max="100" value="0" aria-label="Occupied link utilisation" aria-valuetext="0 percent of MAC service"></meter><p id="admission-result" class="admission"></p><p id="group-warning" class="help" role="status"></p>
+        <div class="result-grid"><div class="result-tile"><strong id="raw-rate">—</strong><span>raw audio payload rate</span></div><div class="result-tile"><strong id="headroom">—</strong><span>headroom to admission ceiling</span></div><div class="result-tile"><strong id="mac-capacity">—</strong><span>available MAC service</span></div><div class="result-tile"><strong id="unused-capacity">—</strong><span>unused capacity at this rate</span></div><div class="result-tile"><strong id="payload">—</strong><span>audio payload per packet</span></div><div class="result-tile"><strong id="o2at-header">—</strong><span>O2AT protocol header per packet</span></div><div class="result-tile"><strong id="ethernet-overhead">—</strong><span>Ethernet overhead and padding per packet</span></div><div class="result-tile"><strong id="wire-bytes">—</strong><span>occupied byte-times per packet</span></div><div class="result-tile"><strong id="groups">—</strong><span>groups per packet</span></div><div class="result-tile"><strong id="interval">—</strong><span>packet interval, not playback latency</span></div></div>
+        <div id="bandwidth-qualifier" class="lab-qualifier">Assumes minimum Ethernet padding and one optional VLAN tag. Occupied time includes MAC header, FCS, preamble/SFD and inter-frame gap. The calculation compares with MAC service, not optical line rate. Reverse-direction credits are separate. Admission does not guarantee switch latency or endpoint support.</div>
+      </div>
+    </form>
+  </div></section>
+  <section class="section section-top" id="clock-lab"><div class="wrap"><p class="eyebrow">02 · Receiver timing</p><h2>Clock and FIFO laboratory</h2><p class="lead">An illustrative deterministic rate model. Choose an elastic source, a common-frequency live source, or an independent fixed-rate source and inspect the effect on finite buffer occupancy.</p>
+    <div class="lab-grid clock-lab-grid">
+      <div class="panel">
+        <div class="field"><label for="source-mode">Source behaviour</label><select id="source-mode"><option value="elastic">Receiver-paced elastic source</option><option value="common-reference">Common-reference live source</option><option value="independent-fixed" selected>Independent fixed-rate live source</option></select></div>
+        <div class="field"><label for="group-rate">Sample group rate</label><select id="group-rate"><option value="48000">48,000 groups/s · stereo PCM48</option><option value="2822400">2,822,400 groups/s · high rate</option><option value="3072000" selected>3,072,000 groups/s · extreme rate</option></select></div>
+        <div class="field"><label for="ppm">Relative producer mismatch (ppm)</label><input id="ppm" type="number" min="-500" max="500" step="1" value="50"><small>Positive fills the FIFO; negative drains it.</small></div>
+        <div class="field"><label for="margin-ms">Available one-sided FIFO margin (ms)</label><input id="margin-ms" type="number" min="0.1" max="20" step="0.1" value="1"></div>
+        <div class="field"><label for="seed">Packet timing seed</label><input id="seed" type="number" min="1" max="2147483647" step="1" value="27191"></div>
+        <div class="lab-controls"><button id="play" class="plain-button" type="button" aria-pressed="false">Play</button><button id="reset" class="plain-button" type="button">Reset</button><button id="lose-reference" class="plain-button" type="button">Simulate reference loss</button></div>
+        <div class="lab-controls"><button id="copy-scenario" class="plain-button" type="button">Copy scenario link</button><span id="copy-status" class="help" role="status"></span></div><input id="scenario-url" class="scenario-readout" type="text" aria-label="Shareable scenario URL" readonly hidden>
+      </div>
+      <div class="panel" aria-live="polite" aria-atomic="true">
+        <div class="field-row"><p><span class="eyebrow">Simulation time</span><br><strong id="clock-now" class="mono">0.0 s</strong> <span id="simulation-state" class="help">Paused</span></p><p><span class="eyebrow">Analytical margin</span><br><strong id="time-to-margin" class="mono">—</strong></p></div>
+        <div class="fifo-track"><progress id="fifo-level" class="fifo-level" max="100" value="50" aria-label="FIFO occupancy"></progress></div><p class="help">Lower / upper boundaries are protection limits, not audible-quality thresholds.</p>
+        <div class="result-grid"><div class="result-tile"><strong id="producer-rate">—</strong><span>producer rate</span></div><div class="result-tile"><strong id="receiver-rate">—</strong><span>receiver conversion-read rate</span></div><div class="result-tile"><strong id="occupancy">—</strong><span>FIFO occupancy</span></div><div class="result-tile"><strong id="backlog">—</strong><span>upstream capture backlog in this model</span></div></div>
+        <p id="clock-state" class="status-note clock-status">OPEN</p><p id="clock-reason" class="help"></p>
+        <div class="state-row" aria-label="Clock lifecycle"><span id="state-OPEN" class="state-pill">OPEN</span><span id="state-CLOCK_VALID" class="state-pill">CLOCK_VALID</span><span id="state-PREFILL" class="state-pill">PREFILL</span><span id="state-RUNNING" class="state-pill">RUNNING</span><span id="state-HOLDOVER" class="state-pill">HOLDOVER</span><span id="state-MUTE_ABORT" class="state-pill">MUTE / ABORT</span></div>
+        <p class="help">Seeded illustrative packet arrival offsets (milliseconds, ±3% around a 125 µs interval):</p><p id="packet-times" class="scenario-readout"></p>
+        <p class="lab-qualifier">This is an illustrative buffer and rate-control model. It does not model oscillator phase noise, PLL transfer functions, analogue coupling or audibility, and it is not measured O2AT hardware performance.</p>
+        <p class="lab-qualifier">Packet arrival is causal. Data in flight remain included in cumulative sent-end limits. This simplified lab illustrates rate drift and credit bounds; it is not a complete wire-protocol simulator.</p>
+      </div>
+    </div>
+  </div></section>
+  <section class="section section-top" id="packet-inspector"><div class="wrap split"><div><p class="eyebrow">03 · Header example</p><h2>A packet, byte by byte.</h2><p class="lead">The v0.2 paper’s worked 12-byte header is shown with its session counter and sequence field.</p></div><div class="panel"><pre id="packet-hex" class="scenario-readout"></pre><p id="packet-fields" class="help"></p><p id="credit-permission" class="scenario-readout"></p><p class="help">This is a labelled example from the draft, not a captured O2AT hardware packet.</p></div></div></section>
+  <script>
+    import { mountExplore } from '../client/explore.ts';
+    mountExplore();
+  </script>
+</BaseLayout>

@@ -1,0 +1,17 @@
+:root {
+  color-scheme: light;
+  --paper: #f5f7f7;
+  --surface: #fff;
+  --ink: #14272d;
+  --muted: #52666c;
+  --line: #d9e2e3;
+  --accent: #087b83;
+  --accent-strong: #075e67;
+  --soft: #e8f0f0;
+  --signal-audio: #087b83;
+  --signal-credit: #bd6a27;
+  --signal-clock: #4555a0;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  --measure: 72rem;
+}

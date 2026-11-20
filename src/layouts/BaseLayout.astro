@@ -1,0 +1,53 @@
+---
+const { title, description = 'Open Optical Audio Transport: an open Layer 2 optical audio proposal centred on 1G SFP.' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, 'https://o2at.net').toString();
+---
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7f7" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/brand/o2at_superscript_black.svg" />
+    <link rel="alternate" type="application/rss+xml" title="O2AT Journal" href="/rss.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="O2AT" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content="https://o2at.net/social-card.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://o2at.net/social-card.png" />
+    <title>{title} · O2AT</title>
+    <link rel="stylesheet" href="/styles/site.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="O2AT, Open Optical Audio Transport"><img src="/brand/o2at_superscript_black.svg" alt="O2AT, Open Optical Audio Transport" width="126" height="46" /></a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary">
+        <a href="/how-it-works/">How it works</a>
+        <a href="/clocking/">Clocking</a>
+        <a href="/specification/">Specification</a>
+        <a href="/explore/">Explore</a>
+        <a href="/build-and-test/">Build &amp; test</a>
+      </nav>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer">
+      <div class="footer-brand"><a class="wordmark" href="/" aria-label="O2AT home"><img src="/brand/o2at_superscript_black.svg" alt="O2AT, Open Optical Audio Transport" width="116" height="42" /></a><p>Open Optical Audio Transport</p></div>
+      <div class="footer-links"><a href="/contribute/">Contribute</a><a href="/journal/">Journal</a><a href="/about/">About</a><a href="/rss.xml">RSS</a></div>
+      <p class="footer-note">O2AT v0.2 is an engineering proposal for review. It is not a ratified standard or a claim of shipping hardware.</p>
+      <p class="copyright">© 2026 Tunji Durodola · <a href="/specification/">Specification and source status</a></p>
+    </footer>
+    <script is:inline src="/scripts/nav.js"></script>
+  </body>
+</html>

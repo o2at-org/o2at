@@ -1,0 +1,33 @@
+{
+  "name": "o2at-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "predev": "python3 scripts/build-web-edition.py",
+    "dev": "astro dev",
+    "prebuild": "python3 scripts/build-web-edition.py",
+    "build": "astro build",
+    "postbuild": "python3 scripts/validate-static-build.py",
+    "preview": "astro preview",
+    "check": "astro check",
+    "render:diagrams": "mmdc -i diagrams/architecture.mmd -o public/diagrams/architecture.svg -b transparent && mmdc -i diagrams/clock-lifecycle.mmd -o public/diagrams/clock-lifecycle.svg -b transparent",
+    "render:social": "python3 scripts/build-social-card.py && sips -s format png public/social-card.svg --out public/social-card.png >/dev/null",
+    "qa:browser": "node scripts/browser-qa.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "astro": "7.4.13"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@mermaid-js/mermaid-cli": "^12.2.0",
+    "@types/node": "^24.10.0",
+    "axe-core": "^4.14.1",
+    "puppeteer-core": "^25.18.1",
+    "typescript": "^5.9.3"
+  }
+}

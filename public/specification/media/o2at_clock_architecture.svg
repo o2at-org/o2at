@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460">
+ <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#3b6e8c"/></marker></defs>
+ <rect x="1" y="1" width="898" height="458" rx="5" fill="#ffffff" stroke="#cbd5e1"/>
+ <g font-family="Avenir Next, OpenAI Sans, sans-serif" font-size="17" fill="#1f2937" font-weight="normal">
+  <rect x="20" y="24" width="238" height="114" rx="5" fill="#f6f9fc" stroke="#94a3b8"/>
+  <text x="36" y="51" fill="#1e3a5f" font-size="20">Source domain</text>
+  <text x="36" y="78">Storage or USB ingress</text><text x="36" y="102">Packer, MAC and PCS</text><text x="36" y="126">Elastic source buffering</text>
+  <rect x="346" y="24" width="255" height="114" rx="5" fill="#f6f9fc" stroke="#94a3b8"/>
+  <text x="362" y="51" fill="#1e3a5f" font-size="20">Receive transport domain</text>
+  <text x="362" y="78">SFP, PCS and MAC</text><text x="362" y="102">Complete-frame validation</text><text x="362" y="126">FCS and session checks</text>
+  <path d="M258,73 H343" fill="none" stroke="#3b6e8c" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="270" y="48" font-size="15">Fibre A</text><text x="273" y="101" font-size="15">Packets</text>
+  <rect x="346" y="197" width="255" height="96" rx="5" fill="#dce6f1" stroke="#3b6e8c"/>
+  <text x="362" y="225" fill="#1e3a5f" font-size="20">Dual-clock audio FIFO</text><text x="362" y="252">Transport-clock writes</text><text x="362" y="277">Audio-clock reads</text>
+  <path d="M475,138 V194" fill="none" stroke="#3b6e8c" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="488" y="171" font-size="15">Accepted groups</text>
+  <rect x="673" y="197" width="207" height="96" rx="5" fill="#dce6f1" stroke="#3b6e8c"/>
+  <text x="689" y="225" fill="#1e3a5f" font-size="20">Conversion domain</text><text x="689" y="252">DAC-specific interface</text><text x="689" y="277">Analogue conversion</text>
+  <path d="M601,238 H670" fill="none" stroke="#3b6e8c" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <rect x="346" y="352" width="255" height="80" rx="5" fill="#f6f9fc" stroke="#94a3b8"/>
+  <text x="362" y="381" fill="#1e3a5f" font-size="20">Audio clock subsystem</text><text x="362" y="408">Local or 10 MHz-disciplined</text>
+  <path d="M475,352 V296" fill="none" stroke="#3b6e8c" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M601,391 H776 V296" fill="none" stroke="#3b6e8c" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="622" y="421" font-size="15">Read and conversion timing</text>
+  <path d="M346,252 H139 V141" fill="none" stroke="#3b6e8c" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+  <text x="28" y="288" font-size="17">Fibre B: receiver credits</text><text x="28" y="314" font-size="17">Controls source delivery</text><text x="28" y="340" font-size="17">through the return MAC</text>
+  <text x="673" y="61" fill="#1e3a5f" font-size="19">Clock separation</text><text x="673" y="90" font-size="17">Serial recovery does</text><text x="673" y="114" font-size="17">not set D/A timing.</text>
+ </g>
+</svg>

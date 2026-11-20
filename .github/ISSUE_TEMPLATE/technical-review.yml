@@ -1,0 +1,44 @@
+name: Technical review
+description: Report a reproducible O2AT specification issue or propose a technically scoped change.
+title: "[Review] "
+labels: ["technical review"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Specification version and source hash
+      placeholder: O2AT v0.2, SHA-256 ...
+    validations:
+      required: true
+  - type: input
+    id: section
+    attributes:
+      label: Section, table, descriptor or vector
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or ambiguity
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and reproduction steps
+      description: Include test vectors or calculations. Do not include secrets or private information.
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility effect
+      description: State whether this changes on-wire behaviour, negotiation, endpoint admission, or existing implementation interpretation.
+    validations:
+      required: true

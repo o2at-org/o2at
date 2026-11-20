@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArchitectureDiagram from '../components/ArchitectureDiagram.astro';
+---
+<BaseLayout title="Open Optical Audio Transport" description="An open Layer 2 optical audio proposal centred on a 1G SFP baseline, with receiver-owned conversion timing and a measurable engineering path.">
+  <section class="hero wrap hero-grid">
+    <div class="hero-copy">
+      <span class="draft-tag">v0.2 engineering draft · for review</span>
+      <p class="eyebrow hero-label">Open audio architecture</p>
+      <h1>Optical audio, specified as an open transport.</h1>
+      <p class="lead">O2AT proposes a duplex 1G SFP link for multichannel PCM and native DSD. It separates packet arrival from the receiver’s audio conversion clock, and makes the transport budget explicit.</p>
+      <div class="actions"><a class="button" href="/specification/">Read the v0.2 specification</a><a class="button secondary" href="/explore/">Open the engineering lab</a></div>
+      <p class="help hero-qualification">A proposal for engineering and community review. There is no claim of a working O2AT prototype or shipping product.</p>
+    </div>
+    <ArchitectureDiagram />
+  </section>
+
+  <section class="section section-top"><div class="wrap">
+    <p class="eyebrow">The design in three decisions</p><h2>A practical baseline, with limits in view.</h2>
+    <div class="number-grid home-numbers">
+      <div class="number-item"><div class="number">1.000 Gb/s</div><div class="number-caption">MAC service from the mandatory 1000BASE-X baseline. The 1.25 GBd line rate is not counted again.</div></div>
+      <div class="number-item"><div class="number">Receiver-owned</div><div class="number-caption">DAC conversion follows the receiver audio clock. A FIFO absorbs packet-delay variation within its design limits.</div></div>
+      <div class="number-item"><div class="number">Measured next</div><div class="number-caption">Clock noise, holdover, loss behaviour and bit-exact interoperability remain prototype and validation work.</div></div>
+    </div>
+  </div></section>
+
+  <section class="section section-top"><div class="wrap split">
+    <div><p class="eyebrow">Read the proposal</p><h2>From link budget to clock behaviour.</h2><p class="lead">The whitepaper is a technical draft. Its calculations are identified separately from hardware measurements, and its unresolved validation questions are published.</p></div>
+    <ul class="link-list">
+      <li><a href="/how-it-works/"><span>How the transport is framed</span><span>01 ↗</span></a></li>
+      <li><a href="/clocking/"><span>Who controls conversion timing</span><span>02 ↗</span></a></li>
+      <li><a href="/explore/"><span>Calculate occupied wire rate</span><span>03 ↗</span></a></li>
+      <li><a href="/build-and-test/"><span>What a prototype must prove</span><span>04 ↗</span></a></li>
+    </ul>
+  </div></section>
+  <section class="section section-top"><div class="wrap split"><div><p class="eyebrow">Current maturity</p><h2>Specification first. Hardware evidence still to come.</h2></div><div class="prose"><p>O2AT v0.2 is an engineering proposal for manufacturer and community review. It defines a 1G optical baseline, Ethernet framing, PCM and packed DSD formats, receiver credits, clock states and a validation plan.</p><p>The worked rates are analytical calculations. No public O2AT reference implementation, prototype measurement, independent interoperability result or standards approval is claimed. Existing equipment limits remain separate from the proposed transport envelope.</p><p><a href="/specification/#status">Read the evidence and release status →</a></p></div></div></section>
+  <section class="section section-top"><div class="wrap"><p class="eyebrow">Journal</p><h2>Questions that shape the design.</h2><div class="article-list journal-list">
+    <article class="article"><p class="article-meta">ENGINEERING NOTE</p><h3><a href="/journal/why-o2at/">Why propose another optical audio transport?</a></h3><p>What an open Layer 2 proposal can clarify, and what it cannot promise.</p></article>
+    <article class="article"><p class="article-meta">CLOCKING</p><h3><a href="/journal/whose-clock/">Whose clock controls playback?</a></h3><p>Why the receiver’s conversion clock is distinct from packet timing.</p></article>
+    <article class="article"><p class="article-meta">CAPACITY</p><h3><a href="/journal/why-1g-sfp/">Why the baseline is 1G SFP.</a></h3><p>Start with the stereo replacement problem and calculate upward.</p></article>
+  </div></div></section>
+</BaseLayout>
