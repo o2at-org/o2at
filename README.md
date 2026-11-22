@@ -1,4 +1,12 @@
-# O2AT website
+# O2AT
+
+**Open Optical Audio Transport Project**
+
+Website: https://o2at.net · Engineering wiki: https://wiki.o2at.net
+
+Project identity and contributions are anchored on O2AT. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for originator and editor attribution.
+
+## Website
 
 Static Astro publication for the Open Optical Audio Transport engineering proposal.
 

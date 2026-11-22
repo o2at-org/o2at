@@ -9,6 +9,8 @@ const canonical = new URL(Astro.url.pathname, 'https://o2at.net').toString();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f5f7f7" />
     <meta name="description" content={description} />
+    <meta name="author" content="Open Optical Audio Transport Project" />
+    <meta name="editor" content="LinuxProphet" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/brand/o2at_superscript_black.svg" />
     <link rel="alternate" type="application/rss+xml" title="O2AT Journal" href="/rss.xml" />
@@ -47,7 +49,7 @@ const canonical = new URL(Astro.url.pathname, 'https://o2at.net').toString();
       <div class="footer-brand"><a class="wordmark" href="/" aria-label="O2AT home"><img src="/brand/o2at_superscript_black.svg" alt="O2AT, Open Optical Audio Transport" width="116" height="42" /></a><p>Open Optical Audio Transport</p></div>
       <div class="footer-links"><a href="/contribute/">Contribute</a><a href="/journal/">Journal</a><a href="/about/">About</a><a href="/rss.xml">RSS</a></div>
       <p class="footer-note">O2AT v0.2 is an engineering proposal for review. It is not a ratified standard or a claim of shipping hardware.</p>
-      <p class="copyright">© 2026 Tunji Durodola · <a href="/specification/">Specification and source status</a></p>
+      <p class="copyright">Open Optical Audio Transport Project · <a href="/specification/">Specification and source status</a></p>
     </footer>
     <script is:inline src="/scripts/nav.js"></script>
   </body>
